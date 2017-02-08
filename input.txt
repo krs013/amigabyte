@@ -1,0 +1,23 @@
+
+So this is what a .mod file has
+
+Up to 31 sample instruments, which are played back at different speeds
+
+4 tracks/channels, which read from each instrument
+
+Each note is an instrument at a note with an effect applied. Some of
+these effects define the song
+
+A collection of patterns, which are usualy 0x40 = 64 beats long
+
+A list that orders the patterns to make the song.
+
+
+So, this means
+
+It's not as incremental or self-similar as we think unless we make it
+so
+
+We won't know what an instrument or channel is doing what unless we
+recognize that
+
