@@ -9,11 +9,12 @@ class Module:
     def __init__(self, file):
         self.bytes = file.read()
         file.close()
+
         self.name = self.bytes[0:20].rstrip(b'\x00').decode()
         
         self.samples = []
         for offset in range(20, 950, 30):
-            sample = Sample(self.bytes[offset:offset+20])
+            sample = Sample(self.bytes[offset:offset+30])
             if sample:
                 self.samples.append(sample)
 
@@ -25,6 +26,7 @@ class Module:
         self.num_patterns = max(self.pattern_positions)
         for offset in range(1084, 1024 * self.num_patterns + 1084, 1024):
             self.patterns.append(Pattern(self.bytes[offset:offset+1024]))
+        set_trace()
 
     def open(filename):
         if not self.bytes:
@@ -38,11 +40,11 @@ class Sample:
     def __init__(self, bytes):
         self.bytes = bytes
         self.name = bytes[0:22].rstrip(b'\x00').decode()
-        self.length = int.from_bytes(bytes[22:24], 'big')
-        self.finetune = 0x0f & int.from_bytes(bytes[24:25], 'big')
-        self.volume = (lambda x: x if x <= 64 else 64)(int.from_bytes(bytes[25:26], 'big'))
-        self.repeat_point = int.from_bytes(bytes[26:28], 'big')
-        self.repeat_length = int.from_bytes(bytes[28:30], 'big')
+        self.length = 2 * int.from_bytes(bytes[22:24], 'big')
+        self.finetune = 0x0f & bytes[24]
+        self.volume = (lambda x: x if x <= 64 else 64)(bytes[25])
+        self.repeat_point = 2 * int.from_bytes(bytes[26:28], 'big')
+        self.repeat_length = 2 * int.from_bytes(bytes[28:30], 'big')
 
     def __bool__(self):
         return bool(self.length and self.volume)
@@ -67,16 +69,14 @@ class Note:
 
     def __init__(self, bytes):
         self.bytes = bytes
-        self.sample = (0xf0 & int.from_bytes(bytes[0], 'big')) + \
-                (0x0f & int.from_bytes(bytes[2], 'big'))
-        self.period = ((0x0f & int.from_bytes(bytes[0], 'big')) << 8) + int.from_bytes(bytes[1])
-        self.effect = (0x0f & int.from_bytes(bytes[2], 'big'), int.from_bytes(bytes[3], 'big'))
+        self.sample = (0xf0 & bytes[0]) + (0x0f & bytes[2])
+        self.period = ((0x0f & bytes[0]) << 8) + bytes[1]
+        self.effect = (0x0f & bytes[2], bytes[3])
         # TODO: Further work will be needed to translate periods to notes...
 
         
 def main(file):
     Module(file)
-    set_trace()
 
 
 if __name__ == '__main__':
