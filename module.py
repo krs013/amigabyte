@@ -69,7 +69,7 @@ class Note:
 
     def __init__(self, bytes):
         self.bytes = bytes
-        self.sample = (0xf0 & bytes[0]) + (0x0f & bytes[2])
+        self.sample = (0xf0 & bytes[0]) + ((0xf0 & bytes[2]) >> 4)
         self.period = ((0x0f & bytes[0]) << 8) + bytes[1]
         self.effect = (0x0f & bytes[2], bytes[3])
         # TODO: Further work will be needed to translate periods to notes...
