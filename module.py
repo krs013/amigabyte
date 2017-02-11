@@ -23,9 +23,16 @@ class Module:
         self.mk = self.bytes[1080:1084]
 
         self.patterns = []
-        self.num_patterns = max(self.pattern_positions)
+        self.num_patterns = max(self.pattern_positions) + 1
         for offset in range(1084, 1024 * self.num_patterns + 1084, 1024):
             self.patterns.append(Pattern(self.bytes[offset:offset+1024]))
+
+        dex = 1024 * self.num_patterns + 1084
+        for sample in self.samples:
+            dex2 = dex + sample.length
+            sample.wave = self.bytes[dex:dex2]
+            dex = dex2
+
         set_trace()
 
     def open(filename):
@@ -45,6 +52,15 @@ class Sample:
         self.volume = (lambda x: x if x <= 64 else 64)(bytes[25])
         self.repeat_point = 2 * int.from_bytes(bytes[26:28], 'big')
         self.repeat_length = 2 * int.from_bytes(bytes[28:30], 'big')
+        self._wave = None
+
+    @property
+    def wave(self):
+        return self._wave
+
+    @wave.setter
+    def wave(self, value):
+        self._wave = [x - 256 if x > 127 else x for x in value]
 
     def __bool__(self):
         return bool(self.length and self.volume)
