@@ -4,17 +4,23 @@ import argparse
 import sys
 from pdb import set_trace
 
+
 class Module:
+    """Amiga mod file object"""
 
     def __init__(self, file):
+        """Open and decode a .mod file"""
         self.bytes = file.read()
         file.close()
 
         self.name = self.bytes[0:20].rstrip(b'\x00').decode()
         
         self.samples = []
+        self.vanity = ""
         for offset in range(20, 950, 30):
             sample = Sample(self.bytes[offset:offset+30])
+            if sample.name:
+                self.vanity += '\n' + sample.name
             if sample:
                 self.samples.append(sample)
 
@@ -33,16 +39,13 @@ class Module:
             sample.wave = self.bytes[dex:dex2]
             dex = dex2
 
-        set_trace()
+    def sample_style(self):
+        for sample in self.samples:
+            pass
 
-    def open(filename):
-        if not self.bytes:
-            self.__init__(open(filename, 'rb'))
-        else:
-            return open(filename, 'rb')
-
-
+            
 class Sample:
+    """Amiga mod sample object"""
 
     def __init__(self, bytes):
         self.bytes = bytes
@@ -67,6 +70,7 @@ class Sample:
     
 
 class Pattern:
+    """Amiga mod pattern object--a sequence of notes across 4 channels"""
 
     def __init__(self, bytes):
         self.channel1 = []
@@ -82,24 +86,33 @@ class Pattern:
 
 
 class Note:
+    """Note entries in Amiga mod patterns"""
+
+    # Sample frequencies were based on horizontal scan frequencies in Amiga
+    PAL = 3579545
+    NTSC = 3546895
 
     def __init__(self, bytes):
         self.bytes = bytes
         self.sample = (0xf0 & bytes[0]) + ((0xf0 & bytes[2]) >> 4)
         self.period = ((0x0f & bytes[0]) << 8) + bytes[1]
         self.effect = (0x0f & bytes[2], bytes[3])
-        # TODO: Further work will be needed to translate periods to notes...
+
+        # Sample rate (based on PAL)
+        self.rate = Note.PAL / self.period if self.period > 0 else 0
+
+    @property
+    def note(self):
+        pass
 
         
-def main(file):
-    Module(file)
+def main():
+    parser = argparse.ArgumentParser(description='Open a .mod file')
+    parser.add_argument('file', type=argparse.FileType('rb'), default=sys.stdin)
+    args = parser.parse_args()
+    mod = Module(args.file)
+    set_trace()
 
 
 if __name__ == '__main__':
-
-    parser = argparse.ArgumentParser(description='Open a .mod file')
-    parser.add_argument('file', type=argparse.FileType('rb'), default=sys.stdin)
-
-    args = parser.parse_args()
-
-    main(args.file)
+    main()
