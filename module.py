@@ -15,7 +15,7 @@ class Module:
 
         self.name = self.bytes[0:20].rstrip(b'\x00').decode()
         
-        self.samples = []
+        self.samples = [None]
         self.vanity = ""
         for offset in range(20, 950, 30):
             sample = Sample(self.bytes[offset:offset+30])
@@ -88,9 +88,10 @@ class Pattern:
 class Note:
     """Note entries in Amiga mod patterns"""
 
-    # Sample frequencies were based on horizontal scan frequencies in Amiga
-    PAL = 3579545
-    NTSC = 3546895
+    # Sample frequencies were based on horizontal scan frequencies in
+    # Amiga
+    PAL = 3579545.25
+    NTSC = 3546894.6
 
     def __init__(self, bytes):
         self.bytes = bytes
@@ -108,7 +109,8 @@ class Note:
         
 def main():
     parser = argparse.ArgumentParser(description='Open a .mod file')
-    parser.add_argument('file', type=argparse.FileType('rb'), default=sys.stdin)
+    parser.add_argument('file', type=argparse.FileType('rb'),
+                        default=sys.stdin)
     args = parser.parse_args()
     mod = Module(args.file)
     set_trace()

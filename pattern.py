@@ -1,11 +1,18 @@
-class Pattern:
+from struct import pack
+from itertools import chain
+from operator import itemgetter
+
+
+class Pattern(tuple):
     """Amiga module file pattern--64 notes across 4 channels"""
-    
-    def __init__(self):
-        self.channel1 = tuple(Note() for i in range(64))
-        self.channel2 = tuple(Note() for i in range(64))
-        self.channel3 = tuple(Note() for i in range(64))
-        self.channel4 = tuple(Note() for i in range(64))
+
+    def __new__(self, bytes=None):
+        return tuple.__new__(
+            Pattern, (tuple(Note() for _ in [0]*64) for _ in [0]*4))
+                             
+    def __init__(self, bytes=None):
+        if bytes:
+            self.read_bytes(bytes)
 
     def read_bytes(self, bytes):
         map(lambda note: note.clear(), self.channel1)
@@ -19,6 +26,9 @@ class Pattern:
             self.channel3[n].read_bytes(bytes[offset+8:offset+12])
             self.channel4[n].read_bytes(bytes[offset+12:offset+16])
 
+    def to_bytes(self):
+        return bytes(chain(zip(*((n.to_bytes() for n in channel) for channel in [self.channel1, self.channel2, self.channel3, self.channel4]))))
+                               
 
 class Note:
     """Note entry in Amiga module file patterns"""
@@ -38,6 +48,13 @@ class Note:
         self.period = ((0x0f & bytes[0]) << 8) + bytes[1]
         self.effect = (0x0f & bytes[2], bytes[3])
 
+    def to_bytes(self):
+        return pack('BBBB',
+                    (0xf0 & self.sample) + (0x0f & self.period >> 8),
+                    0xff & self.period,
+                    (0xf0 & self.sample << 4) + self.effect[0],
+                    self.effect[1])
+        
     @property
     def rate(self):
         return Note.PAL / self._period if self._period > 0 else 0
