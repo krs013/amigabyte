@@ -1,5 +1,6 @@
 from struct import pack
 
+
 class Sample:
 
     def __init__(self, name='instrument'):
@@ -14,7 +15,7 @@ class Sample:
         name = bytes[0:22].rstrip(b'\x00').decode()
         if name:
             self.name = name
-        self.length = 2 * int.from_bytes(bytes[22:24], 'big')
+        self.length = int.from_bytes(bytes[22:24], 'big')
         self.finetune = 0x0f & bytes[24]
         self.volume = (lambda x: x if x <= 64 else 64)(bytes[25])
         self._repeat = (int.from_bytes(bytes[26:28], 'big'),
@@ -28,11 +29,21 @@ class Sample:
         data[22:24] = int.to_bytes(self.length // 2, 2, 'big')
         data[24] = self.finetune
         data[25] = self.volume
-        data[26:30] = pack('>HH', self.repeat[0] // 2, self.repeat[1] // 2)
+        data[26:30] = pack('>HH', self.repeat[0], self.repeat[1])
+
+    @property
+    def length(self):
+        return 2* self._length
 
     @property
     def repeat(self):
         return 2 * self._repeat[0], 2 * self._repeat[1]
+
+    @repeat.setter
+    def repeat(self, repeat):
+        if type(repeat) is not tuple or len(repeat) != 2:
+            raise ValueError
+        self.repeat_point, self.repeat_length = repeat
 
     @property
     def repeat_point(self):
@@ -59,4 +70,6 @@ class Sample:
         if type(value) is bytes:
             self._wave = [x-256 if x > 127 else x for x in value]
         else:
-            self._wave = map(lambda x: min(max(x, -128), 127), value)
+            self._wave = [0, 0] + map(lambda x: min(max(x, -128), 127), value)
+            self._wave += [0] if len(self._wave) % 2 else []  # Even length
+            self._length = length(self._wave) // 2
