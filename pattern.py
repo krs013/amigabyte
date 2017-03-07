@@ -3,52 +3,106 @@ from itertools import chain
 from operator import itemgetter
 
 
-class Pattern(tuple):
+class Pattern:
     """Amiga module file pattern--64 notes across 4 channels"""
 
-    def __new__(self, bytes=None):
-        return tuple.__new__(Pattern, (tuple(Note() for _ in [0]*64)
-                                       for _ in [0]*4))
-                             
+    NCHANNELS = 4
+    
     def __init__(self, bytes=None):
+        self._channels = [Channel() for _ in [0]*Pattern.NCHANNELS]
         if bytes:
             self.read_bytes(bytes)
 
-    def read_bytes(self, bytes):
-        map(lambda note: note.clear(), self.channel1)
-        map(lambda note: note.clear(), self.channel2)
-        map(lambda note: note.clear(), self.channel3)
-        map(lambda note: note.clear(), self.channel4)
+    def __len__(self):
+        return Pattern.NCHANNELS
 
-        for n, offset in enumerate(range(0, 1024, 16)):
-            self.channel1[n].read_bytes(bytes[offset:offset+4])
-            self.channel2[n].read_bytes(bytes[offset+4:offset+8])
-            self.channel3[n].read_bytes(bytes[offset+8:offset+12])
-            self.channel4[n].read_bytes(bytes[offset+12:offset+16])
+    def __getitem__(self, key):
+        if type(key) not in [int, slice]:
+            raise TypeError
+        return self._channels[key]
+
+    def __iter__(self):
+        return iter(self._channels)
+
+    def read_bytes(self, data):
+        notes = [bytes[dex:dex+4] for dex in range(0, 1024, 4)]
+        for n, channel in enumerate(self._channels):
+            channel.read_bytes(notes[n::4])
 
     def to_bytes(self):
         return bytes(chain(zip(
             *((n.to_bytes() for n in channel) for channel in
-              [self.channel1, self.channel2, self.channel3, self.channel4]))))
-                               
+              [self[1], self[2], self[3], self[4]]))))
+
+
+class Channel:
+    """Channel in pattern--64 notes"""
+
+    NNOTES = 64
+
+    def __init__(self):
+        self._notes = [None]*Channel.NNOTES
+
+    def __len__(self):
+        return Pattern.NCHANNELS
+
+    def __getitem__(self, key):
+        if type(key) not in [int, slice]:
+            raise TypeError
+        return self._notes[key]
+
+    def __setitem__(self, key, value):
+        if type(key) not in [int, slice]:
+            raise TypeError
+        if type(value) in [NoneType, Note]:
+            self._notes[key] = value
+        elif type(value) in [bytes, bytearray]:
+            self._notes[key] = Note(value)
+        else:
+            raise TypeError        
+
+    def __iter__(self):
+        return iter(self._notes)
+
+    def __bool__(self):
+        return any(self._notes)
+
+    def read_bytes(self, data):
+        for n, datum in enumerate(data):
+            if any(datum):
+                self._notes[n] = Note(datum)
+            else:
+                self._notes[n] = None
+
+    def to_bytes(self):
+        return (note.to_bytes() if note else b'\0\0\0\0' for note in self)
+
 
 class Note:
     """Note entry in Amiga module file patterns"""
+
+    # There may be many copies, so restrict variables
+    __slots__ = ('sample', '_note', 'effect', '_period')
 
     # Sample frequences were based on horizontal scan frequencies
     PAL = 3579545.25
     NTSC = 3546894.6
 
-    def __init__(self):
+    def __init__(self, data=None):
         self.sample = 0
         self._period = 0
         self.effect = 0
         self._note = None
+        if data:
+            self.read_bytes(data)
 
-    def read_bytes(self, bytes):
-        self.sample = (0xf0 & bytes[0]) + ((0xf0 & bytes[2]) >> 4)
-        self.period = ((0x0f & bytes[0]) << 8) + bytes[1]  # Property
-        self.effect = (0x0f & bytes[2], bytes[3])
+    def __bool__(self):
+        return self.sample or self._period or self.effect
+
+    def read_bytes(self, data):
+        self.sample = (0xf0 & data[0]) + ((0xf0 & data[2]) >> 4)
+        self.period = ((0x0f & data[0]) << 8) + data[1]  # Property
+        self.effect = (0x0f & data[2], data[3])
 
     def to_bytes(self):
         return pack('BBBB',
@@ -68,6 +122,16 @@ class Note:
     @property
     def note(self):
         return self._note
+              
+    @period.setter
+    def period(self, period):
+        self._period = period
+        self._note = Note.NOTES[period]
+                  
+    @note.setter
+    def note(self, note):
+        self._note = note
+        self._period = Note.PERIODS[note]
 
     NOTES = {
         1712: 'C-0', 856: 'C-1', 428: 'C-2', 214: 'C-3', 107: 'C-4',
@@ -83,16 +147,4 @@ class Note:
         961: 'A#0', 480: 'A#1', 240: 'A#2', 120: 'A#3', 60: 'A#4',
         907: 'B-0', 453: 'B-1', 226: 'B-2', 113: 'B-3', 57: 'B-4'}
 
-    PERIODS = {v: k for k, v in Note.NOTES.items()}
-              
-    @period.setter
-    def period(self, period):
-        self._period = period
-        self._note = Note.NOTES[period]
-                  
-    @note.setter
-    def note(self, note):
-        self._note = note
-        self._period = Note.PERIODS[note]
-
-                  
+    PERIODS = {v: k for k, v in NOTES.items()}
