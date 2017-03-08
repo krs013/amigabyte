@@ -8,10 +8,10 @@ class Pattern:
 
     NCHANNELS = 4
     
-    def __init__(self, bytes=None):
+    def __init__(self, data=None):
         self._channels = [Channel() for _ in [0]*Pattern.NCHANNELS]
-        if bytes:
-            self.read_bytes(bytes)
+        if data:
+            self.read_bytes(data)
 
     def __len__(self):
         return Pattern.NCHANNELS
@@ -25,14 +25,13 @@ class Pattern:
         return iter(self._channels)
 
     def read_bytes(self, data):
-        notes = [bytes[dex:dex+4] for dex in range(0, 1024, 4)]
+        notes = [data[dex:dex+4] for dex in range(0, 1024, 4)]
         for n, channel in enumerate(self._channels):
             channel.read_bytes(notes[n::4])
 
     def to_bytes(self):
-        return bytes(chain(zip(
-            *((n.to_bytes() for n in channel) for channel in
-              [self[1], self[2], self[3], self[4]]))))
+        return b''.join(chain(*zip(*(chan.to_bytes() for chan in
+                                     self._channels))))
 
 
 class Channel:
@@ -97,7 +96,7 @@ class Note:
             self.read_bytes(data)
 
     def __bool__(self):
-        return self.sample or self._period or self.effect
+        return any((self.sample, self._period, *self.effect))
 
     def read_bytes(self, data):
         self.sample = (0xf0 & data[0]) + ((0xf0 & data[2]) >> 4)
@@ -126,12 +125,12 @@ class Note:
     @period.setter
     def period(self, period):
         self._period = period
-        self._note = Note.NOTES[period]
+        self._note = Note.NOTES[period] if period else None
                   
     @note.setter
     def note(self, note):
         self._note = note
-        self._period = Note.PERIODS[note]
+        self._period = Note.PERIODS[note] if note else 0
 
     NOTES = {
         1712: 'C-0', 856: 'C-1', 428: 'C-2', 214: 'C-3', 107: 'C-4',
