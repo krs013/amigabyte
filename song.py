@@ -1,6 +1,7 @@
 from os.path import expanduser
 from sample import Sample
 from pattern import Pattern
+from instrument import Instrument
 
 
 class Song:
@@ -56,6 +57,14 @@ class Song:
         with open(expanduser(filename), 'wb') as file:
             file.write(self.to_bytes())
     
+    def instruments(self):
+        instruments = [None] + [Instrument(sample) for sample in self.samples]
+        for pattern in self.patterns:
+            for pos, note in pattern.enumerate_notes():
+                if note.sample:  # Filter out 0's, but may be useful later
+                    instruments[note.sample].add_note(note, pos)
+        return instruments
+
 
 def copy_test(filename, outfile=None):
     Song(filename=filename).write_file(

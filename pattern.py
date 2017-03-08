@@ -33,6 +33,10 @@ class Pattern:
         return b''.join(chain(*zip(*(chan.to_bytes() for chan in
                                      self._channels))))
 
+    def enumerate_notes(self):
+        return ((pos, note) for channel in self._channels
+                for pos, note in enumerate(channel) if note)
+
 
 class Channel:
     """Channel in pattern--64 notes"""
@@ -81,7 +85,7 @@ class Note:
     """Note entry in Amiga module file patterns"""
 
     # There may be many copies, so restrict variables
-    __slots__ = ('sample', '_note', 'effect', '_period')
+    __slots__ = ('sample', '_pitch', 'effect', '_period')
 
     # Sample frequences were based on horizontal scan frequencies
     PAL = 3579545.25
@@ -91,7 +95,7 @@ class Note:
         self.sample = 0
         self._period = 0
         self.effect = 0
-        self._note = None
+        self._pitch = None
         if data:
             self.read_bytes(data)
 
@@ -119,20 +123,20 @@ class Note:
         return self._period
     
     @property
-    def note(self):
-        return self._note
+    def pitch(self):
+        return self._pitch
               
     @period.setter
     def period(self, period):
         self._period = period
-        self._note = Note.NOTES[period] if period else None
+        self._pitch = Note.PITCHES[period] if period else None
                   
-    @note.setter
-    def note(self, note):
-        self._note = note
-        self._period = Note.PERIODS[note] if note else 0
+    @pitch.setter
+    def pitch(self, pitch):
+        self._pitch = pitch
+        self._period = Note.PERIODS[pitch] if pitch else 0
 
-    NOTES = {
+    PITCHES = {
         1712: 'C-0', 856: 'C-1', 428: 'C-2', 214: 'C-3', 107: 'C-4',
         1616: 'C#0', 808: 'C#1', 404: 'C#2', 202: 'C#3', 101: 'C#4',
         1525: 'D-0', 762: 'D-1', 381: 'D-2', 190: 'D-3', 95: 'D-4',
@@ -146,4 +150,4 @@ class Note:
         961: 'A#0', 480: 'A#1', 240: 'A#2', 120: 'A#3', 60: 'A#4',
         907: 'B-0', 453: 'B-1', 226: 'B-2', 113: 'B-3', 57: 'B-4'}
 
-    PERIODS = {v: k for k, v in NOTES.items()}
+    PERIODS = {v: k for k, v in PITCHES.items()}
