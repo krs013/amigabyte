@@ -1,5 +1,4 @@
 from collections import defaultdict
-from sample import Sample
 
 
 class Instrument:
