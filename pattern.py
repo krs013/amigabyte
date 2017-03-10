@@ -47,7 +47,7 @@ class Channel:
         self._notes = [None]*Channel.NNOTES
 
     def __len__(self):
-        return Pattern.NCHANNELS
+        return Pattern.NNOTES
 
     def __getitem__(self, key):
         if type(key) not in [int, slice]:
@@ -55,12 +55,18 @@ class Channel:
         return self._notes[key]
 
     def __setitem__(self, key, value):
-        if type(key) not in [int, slice]:
-            raise TypeError
-        if type(value) in [NoneType, Note]:
-            self._notes[key] = value
-        elif type(value) in [bytes, bytearray]:
-            self._notes[key] = Note(value)
+        if type(key) is int:
+            if type(value) in [NoneType, Note]:
+                self._notes[key] = value
+            elif type(value) in [bytes, bytearray]:
+                self._notes[key] = Note(value)
+            else:
+                raise TypeError('value must be of type bytes, ' +
+                                'bytearray, Note, or None, not ' +
+                                '{}'.format(str(type(value))))
+        elif type(key) is slice:
+            for k, v in zip(range(*key.indices(len(value))), value):
+                self.__setitem__(k, v)
         else:
             raise TypeError        
 
