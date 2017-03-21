@@ -33,9 +33,15 @@ class Pattern:
         return b''.join(chain(*zip(*(chan.to_bytes() for chan in
                                      self._channels))))
 
-    def enumerate_notes(self):
-        return ((pos, note) for channel in self._channels
-                for pos, note in enumerate(channel) if note)
+    def enumerate_notes(self, pattern_dex=0):
+        return ((64*pattern_dex + pos, note) for channel in
+                self._channels for pos, note in channel.enumerate_notes())
+
+    def vector(self, pattern_dex=0):
+        return ((64*pattern_dex + pos, note.ordinality, note.pitch, duration,
+                 note.sample) for channel in self._channels for
+                pos, note, duration in zip(*zip(*channel.enumerate_notes()),
+                                           channel.durations()))
 
 
 class Channel:
@@ -86,6 +92,15 @@ class Channel:
     def to_bytes(self):
         return (note.to_bytes() if note else b'\0\0\0\0' for note in self)
 
+    def enumerate_notes(self):
+        return ((pos, note) for pos, note in enumerate(self._notes) if
+                note and note.pitch)
+
+    def durations(self):
+        next_pos = [pos for pos, note in self.enumerate_notes()][1:] + [64]
+        return (np - p for p, np in zip(
+            (pos for pos, note in self.enumerate_notes()), next_pos))
+                
 
 class Note:
     """Note entry in Amiga module file patterns"""
@@ -135,13 +150,24 @@ class Note:
     @period.setter
     def period(self, period):
         self._period = period
-        self._pitch = Note.PITCHES[period] if period else None
+        self._pitch = Note.PITCHES[period] if period in Note.PITCHES else None
                   
     @pitch.setter
     def pitch(self, pitch):
         self._pitch = pitch
-        self._period = Note.PERIODS[pitch] if pitch else 0
+        self._period = Note.PERIODS[pitch] if pitch in Note.PERIODS else 0
 
+    @property
+    def ordinality(self):
+        return Note.ORDINALITY[self._period] if self._period else 0
+
+    @ordinality.setter
+    def ordinality(self, ordinality):
+        if ordinality == 0 or ordinality > len(Note.ORDINALITY):
+            self.period = 0
+        else:
+            self.period = sorted(Note.PITCHES.keys())[ordinality-1]
+                                  
     PITCHES = {
         1712: 'C-0', 856: 'C-1', 428: 'C-2', 214: 'C-3', 107: 'C-4',
         1616: 'C#0', 808: 'C#1', 404: 'C#2', 202: 'C#3', 101: 'C#4',
@@ -157,3 +183,5 @@ class Note:
         907: 'B-0', 453: 'B-1', 226: 'B-2', 113: 'B-3', 57: 'B-4'}
 
     PERIODS = {v: k for k, v in PITCHES.items()}
+
+    ORDINALITY = {k: n+1 for n, k in enumerate(sorted(PITCHES.keys()))}

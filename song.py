@@ -1,4 +1,5 @@
 from os.path import expanduser
+from itertools import chain
 from sample import Sample
 from pattern import Pattern
 from instrument import Instrument
@@ -64,6 +65,13 @@ class Song:
                 if note.sample:  # Filter out 0's, but may be useful later
                     instruments[note.sample].add_note(note, pos)
         return instruments
+
+    def arranged_patterns(self):
+        return (self.patterns[n] for n in self.positions)
+    
+    def vector(self):
+        return chain(*(pattern.vector(n) for n, pattern in
+                     enumerate(self.arranged_patterns())))
 
 
 def copy_test(filename, outfile=None):
