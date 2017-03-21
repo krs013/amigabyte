@@ -16,6 +16,7 @@ class Song:
         self.mk = b'M.K.'
         if filename:
             self.read_file(filename)
+            self.fill_missing_samples()
         
     def read_file(self, filename):
         with open(expanduser(filename), 'rb') as file:
@@ -58,6 +59,11 @@ class Song:
         with open(expanduser(filename), 'wb') as file:
             file.write(self.to_bytes())
     
+    def fill_missing_samples(self):
+        carryovers = (0, 0, 0, 0)
+        for p in self.positions:
+            carryovers = self.patterns[p].fill_missing_samples(carryovers)
+
     def instruments(self):
         instruments = [None] + [Instrument(sample) for sample in self.samples]
         for pattern in self.patterns:
@@ -77,6 +83,15 @@ class Song:
 def copy_test(filename, outfile=None):
     Song(filename=filename).write_file(
         outfile if outfile else filename.split('.')[-2] + '-copy.mod')
+
+
+def vector_test(filename, outfile=None):
+    if not outfile:
+        outfile = filename.split('.')[-2] + '.csv'
+
+    with open(outfile, 'w') as out:
+        for note in Song(filename=filename).vector():
+            print(*note, sep=',', file=out)
 
 
 if __name__ == '__main__':

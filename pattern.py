@@ -33,6 +33,10 @@ class Pattern:
         return b''.join(chain(*zip(*(chan.to_bytes() for chan in
                                      self._channels))))
 
+    def fill_missing_samples(self, carryovers):
+        return tuple(map(Channel.fill_missing_samples, self._channels,
+                         carryovers))
+
     def enumerate_notes(self, pattern_dex=0):
         return ((64*pattern_dex + pos, note) for channel in
                 self._channels for pos, note in channel.enumerate_notes())
@@ -91,6 +95,18 @@ class Channel:
 
     def to_bytes(self):
         return (note.to_bytes() if note else b'\0\0\0\0' for note in self)
+
+    def fill_missing_samples(self, carryover):
+        for note in filter(None, self._notes):
+            if note.pitch:
+                if note.sample:
+                    carryover = note.sample
+                else:
+                    if not carryover:
+                        raise SampleCarryoverError
+                    note.sample = carryover
+        return carryover
+                    
 
     def enumerate_notes(self):
         return ((pos, note) for pos, note in enumerate(self._notes) if
@@ -185,3 +201,7 @@ class Note:
     PERIODS = {v: k for k, v in PITCHES.items()}
 
     ORDINALITY = {k: n+1 for n, k in enumerate(sorted(PITCHES.keys()))}
+
+
+class SampleCarryoverError(Exception):
+    pass
