@@ -42,7 +42,7 @@ class Pattern:
                 self._channels for pos, note in channel.enumerate_notes())
 
     def vector(self, pattern_dex=0):
-        return ((64*pattern_dex + pos, note.ordinality, note.pitch, duration,
+        return ((64*pattern_dex + pos, note.ordinality, duration,
                  note.sample) for channel in self._channels for
                 pos, note, duration in zip(*zip(*channel.enumerate_notes()),
                                            channel.durations()))

@@ -23,7 +23,6 @@ class Sample:
         self._repeat = (int.from_bytes(data[26:28], 'big'),
                         int.from_bytes(data[28:30], 'big'))
         self._wave = None
-        # If these fields are manipulated, validate in setters
 
     def to_bytes(self):
         data = bytearray(30)
@@ -33,6 +32,9 @@ class Sample:
         data[25] = self.volume
         data[26:30] = pack('>HH', *self._repeat)
         return data
+
+    def analyze_note(self):
+        pass
 
     @property
     def wave_bytes(self):
