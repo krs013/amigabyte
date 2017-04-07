@@ -153,7 +153,7 @@ class Note:
         
     @property
     def rate(self):
-        return Note.PAL / self._period if self._period > 0 else 0
+      return Note.PAL / self._period if self._period > 0 else 0
 
     @property
     def period(self):

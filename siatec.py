@@ -1,33 +1,41 @@
 import numpy as np
 from itertools import chain, combinations
 from functools import reduce
+from collections import defaultdict
 
 
 class SIATEC:
 
-    def __init__(self, data):
-        self.data = np.array(sorted(data))
-        self.num_points, self.dimensions = self.data.shape
-        self.mtps = self.find_mtps()
+    def __init__(self, data, nmtps=100):
+        self.data = list(sorted(data))
+        self.nmtps = nmtps
+        self.array = np.array(self.data)
+        self.num_points, self.dimensions = self.array.shape
+        self.adjacency = None
+        self.patterns = None
+        self.occurences = None
 
-    def find_mtps(self):
-        vectors = [set(map(tuple, col)) for col in self.vector_table()]
-        patterns = {}
-        for combo in pairs_plus(range(self.num_points)):
-            pattern = reduce(set.intersection, (vectors[n] for n in combo))
-            if len(pattern) > 1:
-                patterns[combo] = len(pattern) 
-        return patterns
+    def analyze(self):
+        self.make_adjacency()
+        self.sia_mtps()
+        self.siatec_mtps()
 
-    def vector_table(self):
-        vector_table = np.zeros((self.num_points, self.num_points,
-                                 self.dimensions), dtype=np.int32)
-        vector_table -= self.data
-        vector_table = vector_table.transpose(1,0,2)
-        vector_table += self.data
-        return vector_table
+    def make_adjacency(self):
+        self.adjacency = np.zeros((self.num_points, self.num_points,
+                                   self.dimensions), dtype=np.int32)
+        self.adjacency -= self.data
+        self.adjacency = self.adjacency.transpose(1,0,2)
+        self.adjacency += self.data
 
+    def sia_mtps(self):
+        translations = defaultdict(list)
+        for n in range(self.num_points):
+            for m in range(n+1, self.num_points):
+                translations[tuple(self.adjacency[n, m])] += [self.data[n]]
+        cutoff = sorted(map(len, translations.values()))[self.nmtps]
+        self.patterns = sorted(filter(lambda v: len(v) > cutoff,
+                                      translations.values()),
+                               key=lambda v: len(v),
+                               reverse=True)
 
-def pairs_plus(items):
-    return chain(*(combinations(items, x) for x in range(2, len(items))))
     

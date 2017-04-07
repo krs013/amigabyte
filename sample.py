@@ -1,4 +1,5 @@
 from struct import pack
+import numpy as np
 
 
 class Sample:
@@ -34,7 +35,9 @@ class Sample:
         return data
 
     def analyze_note(self):
-        pass
+        if not self._wave:
+            raise Exception('No wave to analyze')
+        fft = np.fft.rfft(self.wave)
 
     @property
     def wave_bytes(self):
@@ -74,7 +77,10 @@ class Sample:
 
     @property
     def wave(self):
-        return self._wave[2:]  # Repeat/null junk at beginning?
+        if self._wave:
+            return self._wave[2:]  # Repeat/null junk at beginning?
+        else:
+            return []
 
     @wave.setter
     def wave(self, value):
