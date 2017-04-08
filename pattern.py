@@ -1,6 +1,7 @@
 from struct import pack
 from itertools import chain
 from operator import itemgetter
+from collections import Iterable
 
 
 class Pattern:
@@ -57,7 +58,7 @@ class Channel:
         self._notes = [None]*Channel.NNOTES
 
     def __len__(self):
-        return Pattern.NNOTES
+        return Channel.NNOTES
 
     def __getitem__(self, key):
         if type(key) not in [int, slice]:
@@ -66,7 +67,7 @@ class Channel:
 
     def __setitem__(self, key, value):
         if type(key) is int:
-            if type(value) in [NoneType, Note]:
+            if type(value) in [type(None), Note]:
                 self._notes[key] = value
             elif type(value) in [bytes, bytearray]:
                 self._notes[key] = Note(value)
@@ -75,8 +76,12 @@ class Channel:
                                 'bytearray, Note, or None, not ' +
                                 '{}'.format(str(type(value))))
         elif type(key) is slice:
-            for k, v in zip(range(*key.indices(len(value))), value):
-                self.__setitem__(k, v)
+            if isinstance(value, Iterable):
+                for k, v in zip(range(*key.indices(Channel.NNOTES)), value):
+                    self.__setitem__(k, v)
+            else:
+                for k in range(*key.indices(Channel.NNOTES)):
+                    self.__setitem__(k, value)
         else:
             raise TypeError        
 
@@ -131,7 +136,7 @@ class Note:
     def __init__(self, data=None):
         self.sample = 0
         self._period = 0
-        self.effect = 0
+        self.effect = (0, 0)
         self._pitch = None
         if data:
             self.read_bytes(data)

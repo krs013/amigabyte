@@ -10,7 +10,7 @@ class Sample:
         self._length = 0
         self.finetune = 0
         self.volume = 64
-        self._repeat = (None, None)
+        self._repeat = (0, 0)
         if data:
             self.read_bytes(data)
 
@@ -65,7 +65,7 @@ class Sample:
 
     @repeat_point.setter
     def repeat_point(self, repeat_point):
-        self._repeat[0] = repeat_point // 2
+        self._repeat = (repeat_point // 2, self._repeat[1])
 
     @property
     def repeat_length(self):
@@ -73,7 +73,7 @@ class Sample:
 
     @repeat_length.setter
     def repeat_length(self, repeat_length):
-        self._repeat[1] = repeat_point // 2
+        self._repeat = (self._repeat[0], repeat_length // 2)
 
     @property
     def wave(self):
@@ -87,6 +87,9 @@ class Sample:
         if type(value) is bytes:  # Needs to start with 00
             self._wave = [x-256 if x > 127 else x for x in value]
         else:
-            self._wave = [0, 0] + map(lambda x: min(max(x, -128), 127), value)
+            self._wave = [0, 0]  # Weird repeat stuff?
+            self._wave.extend(map(lambda x: min(max(int(x), -128), 127),
+                                  value))
             self._wave += [0] if len(self._wave) % 2 else []  # Even length
-            self._length = length(self._wave) // 2
+            self._length = len(self._wave) // 2
+            self.repeat = (2, len(value))

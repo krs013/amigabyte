@@ -45,7 +45,8 @@ class Song:
 
     def to_bytes(self):
         name = self.name.encode().ljust(20, b'\0')
-        samples = b''.join(sample.to_bytes() for sample in self.samples)
+        samples = b''.join(sample.to_bytes() for sample in
+                           self.samples).ljust(930, b'\0')
         positions = bytes([len(self.positions), 127] +
                           self.positions).ljust(130, b'\0') + self.mk
         # Note: if a pattern was removed from positions, it can't be here!
