@@ -7,6 +7,7 @@ from writeSong import writeFile, NoteObj
 numPitches = 5
 numTimesteps = 16 # 4 timesteps per beat
 
+# Create a randomized table for testing purposes
 def createPitchTable():
 	Table = []
 	for i in range(numPitches+1):
@@ -22,6 +23,7 @@ def createPitchTable():
 		Table.append(entry)
 	return Table
 
+# Create a randomized upper traingular table for testing purposes
 def createTimestepTable():
 	Table = []
 	# first entry in table is NULL
@@ -42,6 +44,7 @@ def createTimestepTable():
 		Table.append(entry)
 	return Table
 
+# Generate a bassline
 def generateBassline(BassTimestep2BassTimestep, BassPitch2BassPitch):
 	# First generate timestep pattern
 	Bassline = []
@@ -71,19 +74,17 @@ def generateBassline(BassTimestep2BassTimestep, BassPitch2BassPitch):
 	
 	return Bassline
 
+# Generate a treble line, contingent on the bassline
 def generateTrebleLine(Bassline,TreblePitch2TreblePitch,BassPitch2TreblePitch,TrebleTimestep2TrebleTimestep,BassTimestep2TrebleTimestep, BassTimestep2BassTimestep):
 	# First generate timestep pattern
 	Trebleline = []
 	pick = 0
 	l = list(range(numTimesteps+1))
 
-	# You need to be considering only the most recent bass note played.....
-
 	# Create timestep list first
 	currentBassNote = 0 #
 	if Bassline[0].timestep == 1:
 		currentBassNote = 1
-	print(str([x.timestep for x in Bassline]))
 	while True:
 
 		# Compute a dot produce of the two lists
@@ -94,7 +95,6 @@ def generateTrebleLine(Bassline,TreblePitch2TreblePitch,BassPitch2TreblePitch,Tr
 
 		# Make a choice
 		pick = choice(l, p=normalizedWeights)
-		print(pick)
 		if pick == 0:
 			break
 		else:
@@ -109,10 +109,6 @@ def generateTrebleLine(Bassline,TreblePitch2TreblePitch,BassPitch2TreblePitch,Tr
 				else:
 					newCurrentBassNote = bassnote.timestep
 			currentBassNote = newCurrentBassNote
-			print("currentBassNote is now " + str(currentBassNote))
-			print("=======")
-
-				
 
 	# Then fill in notes with pitches
 	prevPitch = 0
@@ -126,8 +122,6 @@ def generateTrebleLine(Bassline,TreblePitch2TreblePitch,BassPitch2TreblePitch,Tr
 			else:
 				currentBassPitch = bassnote.pitch
 
-		print("currentBassPitch is " + str(currentBassPitch))
-		print("prev pitch is " + str(prevPitch))
 		# Compute a dot proudct of the two lists
 		combinedWeights = [a*b for a,b in zip(TreblePitch2TreblePitch[prevPitch], BassPitch2TreblePitch[currentBassPitch])]
 
