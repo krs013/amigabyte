@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 from numpy.random import choice
+from datetime import datetime
+from writeSong import writeFile
 
 rest = '|'
 
 MarkovChain = []
 PitchMarkovChain = []
+Bassline = []
+
 
 # Everything from C1 to B4
 def getPitchIndex(s):
@@ -35,7 +39,7 @@ def getPitchIndex(s):
     elif (split[0] == "B"):
         index = 11
     else:
-        print "eRROR!"
+        print("eRROR!")
     if (index < 9):
         octave = (int(split[1]) - 1)
     else:
@@ -149,8 +153,8 @@ def extractData():
             array = line.split()
             if array and array[0] != '%':
                 if len(array) != 32:    # Check to see that the input bassline is the right length
-                    print 'ERROR! wrong size'
-                    print array
+                    print('ERROR! wrong size')
+                    print(array)
                 else:
                     # First do all the rhythm stuff
                     oldIndex = 0
@@ -202,10 +206,17 @@ def createBassline():
         beatList.append(nextBeat)
         i = nextBeat
 
+        note = []
+        note.append(int(nextBeat)*4)
+        Bassline.append(note)
+    print(beatList)
+    i=0
     for beat in beatList:
         l = range(37)
         weights = PitchMarkovChain[0]
         pitch = choice(l, p=weights)
+        Bassline[i].append(int(pitch)+12)
+        i = i + 1
         if (beat != 17):
             newBassline[beat-1] = getPitchName(pitch)
             weights = PitchMarkovChain[pitch]
@@ -218,9 +229,12 @@ def createBassline():
     f.write(str)
     f.close()
 
+    print(Bassline)
+
 
     
 initMarkovChains();
 extractData();
 computeProbabilities();
 createBassline();
+writeFile(Bassline,Bassline,"bassline" + ".mod")

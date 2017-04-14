@@ -1,0 +1,38 @@
+% A '%' character denotes a comment
+
+% NEW DORP. NEW YORK
+C_2 | | | C_2 | | | C_2 | | | C_2 | | | C_2 | | | C_2 | | | C_2 | | | C_2 | | |
+
+% Inspector Norse
+% C_2 | C_3 | C_2 | C_3 | D_2 | D_3 | D_2 | D_3 | D_2 | D_3 | D_2 | D_3 | D_2 | D_3 | B_2 | 12 |
+Bb_2 | Bb_3 | Bb_2 | Bb_3 | C_2 | C_3 | C_2 | C_3 | C_2 | C_3 | C_2 | C_3 | C_2 | C_3 | A_2 | A_3 | 
+
+% Rewind
+F_2 | | F_2 | | F_2 | | | | | | | | | C_2 | | C_2 | | C_2 | | | | | | | | |
+
+% Walking on a Dream
+C_2 C_2 | Eb_2 Eb_2 Eb_2 | Eb_2 Eb_2 Eb_2 | D_2 D_2 D_2 | C_2 C_2 C_2 | Eb_2 Eb_2 Eb_2 | Eb_2 Eb_2 Eb_2 | D_2 D_2 D_2 | D_2
+
+% Feel it All Around
+Eb_2 | Eb_2 | | Eb_2 | | Eb_2 | | | | | C_2 Eb_2 F_2 | F_2 | | F_2 | | F_2 | | C_2 F_2 | C_2 |
+
+% HSKT
+| | C_2 | | | C_2 | | | C_2 | | | C_2 | | | C_2 | | | C_2 | | | C_3 | | | C_3 |
+
+% Losing My Edge
+C_2 | C_2 | | C_2 | Bb_2 C_2 | | | | | | | C_2 | C_2 | | C_2 | Bb_2 C_2 | | | | | | |
+
+% Strandbar
+C_2 | | C_2 | C_2 | C_2 | C_2 | G_1 Bb_2 | B_2 | C_2 | | C_2 | C_2 | C_2 | C_2 | G_1 Bb_2 | B_2 |
+
+% Silver
+C_2 | | | | | | | | | | | | | | | Bb_2 | | | | | | | | | | | | | | |
+
+% Marijuana
+C_2 | | C_2 C_2 | C_2 | | C_2 C_2 | C_2 | | | G_1 | | G_1 G_1 | G_1 | | G_1 G_1 | G_1 | | |
+
+% Blush
+C_2 | | | Eb_2 | C_2 | F_2 | G_2 | F_2 | Ab_1 | | | Ab_1 | | | C_2 | Bb_2 | | | Bb_2 | | |
+
+% Sound of Silver
+C_2 | Bb_2 | C_2 | Bb_2 | C_2 | Bb_2 C_2 | | | | C_2 | Bb_2 | C_2 | Bb_2 | C_2 | Bb_2 C_2 | | | |
