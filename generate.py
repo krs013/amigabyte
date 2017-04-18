@@ -48,7 +48,7 @@ def createTimestepTable():
 
 
 # Generate a bassline
-def generateBassline(BassTimestep2BassTimestep, BassPitch2BassPitch, ps=None):
+def generateBassline(BassTimestep2BassTimestep, BassPitch2BassPitch):
     # First generate timestep pattern
     Bassline = []
 
@@ -69,7 +69,7 @@ def generateBassline(BassTimestep2BassTimestep, BassPitch2BassPitch, ps=None):
 
     # Then fill in notes with pitches
     prevPitch = 0
-    l = ps or list(range(numPitches+1))
+    l = list(range(numPitches+1))
     for note in Bassline:
         weights = BassPitch2BassPitch[prevPitch]
         pick = choice(l, p=weights)
@@ -147,54 +147,6 @@ def generateTrebleLine(
     return Trebleline
 
 
-def mimic_test():
-
-    song = Song(filename='mods/3_pasar_lypsyl_4.mod')
-
-    bp, bp2bp = song.instruments[8].fomm_pitch()
-    bb2bb = song.instruments[8].fomm_beats()
-
-    tp, tp2tp = song.instruments[15].fomm_pitch()
-    tb2tb = song.instruments[15].fomm_beats()
-
-    _, _, bp2tp = song.pitch_correlation(8, 15)
-    bb2tb = song.beats_correlation(8, 15)
-
-    bassline = generateBassline(bb2bb, bp2bp)
-    trebleline = generateTrebleLine(bassline, tp2tp, bp2tp, tb2tb,
-                                    bb2tb, bb2bb)
-    newBassline = []
-    newTrebleline = []
-    
-    for i in range(4):
-        for note in trebleline:
-            if note.pitch == 1:
-                note.pitch = 0
-            if note.pitch == 2:
-                note.pitch = 2
-            if note.pitch == 3 or note.pitch == 4:
-                note.pitch += 1
-            if note.pitch == 5:
-                note.pitch = 7
-            newNote = NoteObj(int(note.pitch), int(note.timestep + i*16))
-            newTrebleline.append(newNote)
-        for note in bassline:
-            if note.pitch == 1:
-                note.pitch = 0
-            if note.pitch == 2:
-                note.pitch = 2
-            if note.pitch == 3 or note.pitch == 4:
-                note.pitch += 1
-            if note.pitch == 5:
-                note.pitch = 7
-            newNote = NoteObj(int(note.pitch), int(note.timestep + i*16))
-            newBassline.append(newNote)
-
-    songname = "mimic.mod"
-
-    writeFile(newBassline,newTrebleline,songname)
-
-
 def random_test():
     BassPitch2BassPitch = createPitchTable()
     BassTimestep2BassTimestep = createTimestepTable()
@@ -242,5 +194,4 @@ def random_test():
     writeFile(newBassline,newTrebleline,songname)
 
 if __name__ == '__main__':
-    # random_test()
-    mimic_test()
+    random_test()

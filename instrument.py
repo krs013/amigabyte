@@ -9,7 +9,7 @@ class Instrument:
     def __init__(self, sample):
         self.sample = sample
         self.base_freq = 0
-        self.notes = [(-1, None)]  # Not a fan of -1...
+        self.notes = []
         self.pitches = defaultdict(int)
         self.beats = defaultdict(int)
         self.effects = defaultdict(int)
@@ -17,7 +17,7 @@ class Instrument:
         self.counts_beats = np.zeros((self.BEATS, self.BEATS))
         self.melodic = None
         self.related = []
-        self.last_pos, self.last_note = self.notes[0]
+        self.last_pos, self.last_note = 0, None
 
     def add_note(self, note, pos):
         # Record data
@@ -28,7 +28,7 @@ class Instrument:
 
         # Populate first-order Markov Models
         self.counts_pitch[self.last_note][note.pitch] += 1
-        self.counts_beats[self.last_pos+1][pos%self.BEATS] += 1
+        self.counts_beats[self.last_pos][pos%self.BEATS] += 1
         self.last_note = note.pitch
         self.last_pos = pos % self.BEATS
 
