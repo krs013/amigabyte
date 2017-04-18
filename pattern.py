@@ -38,6 +38,9 @@ class Pattern:
         return tuple(map(Channel.fill_missing_samples, self._channels,
                          carryovers))
 
+    def synchronous_notes(self):
+        return zip(*(iter(channel) for channel in self._channels))
+
     def enumerate_notes(self, pattern_dex=0):
         return ((64*pattern_dex + pos, note) for channel in
                 self._channels for pos, note in channel.enumerate_notes())
@@ -94,7 +97,7 @@ class Channel:
     def read_bytes(self, data):
         for n, datum in enumerate(data):
             if any(datum):
-                self._notes[n] = Note(datum)
+                self._notes[n] = Note(data=datum)
             else:
                 self._notes[n] = None
 
@@ -133,13 +136,16 @@ class Note:
     PAL = 3579545.25
     NTSC = 3546894.6
 
-    def __init__(self, data=None):
-        self.sample = 0
-        self._period = 0
-        self.effect = (0, 0)
-        self._pitch = None
+    def __init__(self, sample=0, pitch=None, *, period=None, effect=None,
+                 data=None):
         if data:
             self.read_bytes(data)
+        else:
+            self.sample = sample
+            self.pitch = pitch
+            self.effect = effect or (0, 0)
+            if period:
+                self.period = period
 
     def __bool__(self):
         return any((self.sample, self._period, *self.effect))
