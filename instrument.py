@@ -16,15 +16,12 @@ class Instrument:
     def __init__(self, sample, song=None):
         self.sample = sample
         self.song = song
-        self.base_freq = 0
         self.notes = []
         self.pitches = defaultdict(int)
         self.beats = defaultdict(int)
         self.effects = defaultdict(int)
         self.counts_pitch = defaultdict(lambda: defaultdict(int))
         self.counts_beats = np.zeros((self.BEATS, self.BEATS))
-        self.melodic = None
-        self.related = []
         self.last_pos, self.last_note = 0, None
 
         self._snr = None
@@ -34,7 +31,7 @@ class Instrument:
 
     @property
     def vector(self):
-        return (self.std_freq, self.snr,
+        return (self.rounded_pitch_num, self.snr,
                 self.unique_pitches, self.beat_occurrences)
 
     @property
