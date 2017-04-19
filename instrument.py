@@ -58,9 +58,11 @@ class Instrument:
     def rounded_pitch_num(self):
         if self._rounded_pitch_num is None:
             pitch_sum = 0
+            val_accum = 0
             for key, value in self.pitches.items():
                 pitch_sum += (value * NAMES2MIDI[key])
-            avg_midi_pitch = pitch_sum/len(self.pitches)
+                val_accum += value
+            avg_midi_pitch = pitch_sum/val_accum
             pitch_nums = list(range(60))
             idx = (np.abs(np.array(pitch_nums)-avg_midi_pitch)).argmin()
             self._rounded_pitch_num =  pitch_nums[idx]
