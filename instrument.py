@@ -134,5 +134,3 @@ class Instrument:
 
     def get_pitch_variance(self):
         self.unique_pitches = len(self.pitches)
-
-Instrument.analyze_pitch()
