@@ -1,7 +1,8 @@
 import numpy as np
 import scipy.cluster.hierarchy as sch
 from os import path
-from sys import stderr
+from sys import stderr, argv
+from glob import glob
 from song import Song
 from instrument import Instrument
 
@@ -13,7 +14,7 @@ class Learner:
         self.prefix = path.commonprefix(self.pending) or path.abspath('.')
         self.learned = []
         self.songs = []
-        self.instruments[]
+        self.instruments = []
 
     def analyze(self, files=[]):
         self.pending.extend((path.relpath(f, self.prefix) for f in files))
@@ -45,3 +46,12 @@ class Learner:
 
         # Maybe maybe mess with stuff to make it more song-like (mutate)
         pass
+
+
+def main(files):
+    learner = Learner(files)
+    return learner  # TODO: analyze, etc.
+
+
+if __name__ == '__main__':
+    main(argv[1:])
