@@ -45,9 +45,28 @@ NAMES2MIDI = {
     'C-4': 48, 'C#4': 49, 'D-4': 50, 'D#4': 51, 'E-4': 52, 'F-4': 53,
     'F#4': 54, 'G-4': 55, 'G#4': 56, 'A-4': 57, 'A#4': 58, 'B-4': 59 }
 
+PITCHES = {
+    1712: 'C-0', 856: 'C-1', 428: 'C-2', 214: 'C-3', 107: 'C-4',
+    1616: 'C#0', 808: 'C#1', 404: 'C#2', 202: 'C#3', 101: 'C#4',
+    1525: 'D-0', 762: 'D-1', 381: 'D-2', 190: 'D-3', 95: 'D-4',
+    1440: 'D#0', 720: 'D#1', 360: 'D#2', 180: 'D#3', 90: 'D#4',
+    1357: 'E-0', 678: 'E-1', 339: 'E-2', 170: 'E-3', 85: 'E-4',
+    1281: 'F-0', 640: 'F-1', 320: 'F-2', 160: 'F-3', 80: 'F-4',
+    1209: 'F#0', 604: 'F#1', 302: 'F#2', 151: 'F#3', 76: 'F#4',
+    1141: 'G-0', 570: 'G-1', 285: 'G-2', 143: 'G-3', 71: 'G-4',
+    1077: 'G#0', 538: 'G#1', 269: 'G#2', 135: 'G#3', 67: 'G#4',
+    1017: 'A-0', 508: 'A-1', 254: 'A-2', 127: 'A-3', 64: 'A-4',
+    961: 'A#0', 480: 'A#1', 240: 'A#2', 120: 'A#3', 60: 'A#4',
+    907: 'B-0', 453: 'B-1', 226: 'B-2', 113: 'B-3', 57: 'B-4'}
+
+PERIODS = {v: k for k, v in PITCHES.items()}
+
+
 class Instrument:
 
     BEATS = 16  # Length of beat sequences to track (max 64)
+    PAL = 3579545.25
+
 
     def __init__(self, sample, song=None):
         self.sample = sample
@@ -67,7 +86,7 @@ class Instrument:
         self.unique_pitches = 0
         self.beat_occurrences = 0
         self.snr = 0
-        self.principle_freq = 0
+        self.std_freq = 0
 
         self.rounded_pitch_num = 0
 
@@ -141,7 +160,13 @@ class Instrument:
 
         idx = np.argmax(np.abs(spectrum))
         freq = freqs[idx]
-        sample_rate = self.rounded_pitch_num # TODO
+
+
+      # return Note.PAL / self._period if self._period > 0 else 0
+
+        period = MIDI2MODPITCHES[rounded_pitch_num]
+        sample_rate = PAL / period
+
         freq_in_hertz = abs(freq * sample_rate)
         print("freq in hertz: " + str(freq_in_hertz))
         plt.plot(freqs, abs(spectrum))
@@ -200,9 +225,10 @@ class Instrument:
         # same peak location and magnitude (but more prominent, higher SNR)
         # raise NotImplementedError('Still have to write analyze_pitch')
 
-        self.principle_freq = freq_in_hertz
+        #self.principle_freq = freq_in_hertz
         self.snr = snr
-        
+        self.std_freq = std_freq
+
     def get_distinct_beat(self):
         self.beat_occurrences = len(self.beats)
 
