@@ -31,7 +31,7 @@ class Instrument:
 
     @property
     def vector(self):
-        return (self.rounded_pitch_num, self.snr,
+        return (self.std_freq, self.snr,
                 self.unique_pitches, self.beat_occurrences)
 
     @property
@@ -60,8 +60,8 @@ class Instrument:
             pitch_sum = 0
             for key, value in self.pitches.items():
                 pitch_sum += (value * NAMES2MIDI[key])
-                avg_midi_pitch = pitch_sum/len(self.pitches)
-                pitch_nums = list(range(60))
+            avg_midi_pitch = pitch_sum/len(self.pitches)
+            pitch_nums = list(range(60))
             idx = (np.abs(np.array(pitch_nums)-avg_midi_pitch)).argmin()
             self._rounded_pitch_num =  pitch_nums[idx]
         return self._rounded_pitch_num
