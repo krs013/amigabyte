@@ -14,23 +14,21 @@ def main():
         if sum(bb2bb[n]) == 0:
             bb2bb[n,-1] = 1.0
         else:
-            bb2bb[n] /= sum(bb2bb[n]
+            bb2bb[n] /= sum(bb2bb[n])
 
     melody_pitches, melody_pitch_fomm = song.instruments[15].fomm_pitch()
     melody_beats_fomm = song.instruments[15].fomm_beats()
+                            
     for n in range(1, len(bb2bb)):
         tb2tb[n,:n]=0.0
         if sum(tb2tb[n]) == 0:
             tb2tb[n,-1] = 1.0
         else:
-            tb2tb[n] /= sum(tb2tb[n]
+            tb2tb[n] /= sum(tb2tb[n])
                             
-    _, _, bp2tp = song.pitch_correlation(8, 15)
-    bb2tb = song.beats_correlation(8, 15)
+    _, _, pitch_correlation = song.pitch_correlation(8, 15)
+    beats_correlation = song.beats_correlation(8, 15)
 
-    bassline = generateBassline(bb2bb, bp2bp)
-    trebleline = generateTrebleLine(bassline, tp2tp, bp2tp, tb2tb,
-                                    bb2tb, bb2bb)
     newBassline = []
     newTrebleline = []
     

@@ -51,5 +51,8 @@ class Instrument:
         if not self.sample or not self.sample._wave:
             raise Exception('No wave to analyze')
         fft = np.fft.rfft(self.wave)
+        np.abs(fft, fft)
+        np.square(fft, fft)
+        np.log(fft, fft)
         raise NotImplementedError('Still have to write analyze_pitch')
         
