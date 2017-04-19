@@ -83,7 +83,7 @@ class Song:
                                  for sample in self.samples]
             for n, pattern in enumerate(self.arranged_patterns()):
                 for pos, note in pattern.enumerate_notes(n):
-                    if note.sample:  # Filter out 0's, but may be useful later
+                    if note.sample and self._instruments[note.sample]:
                         self._instruments[note.sample].add_note(note, pos)
         return self._instruments
 
