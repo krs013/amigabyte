@@ -43,7 +43,7 @@ class Sample:
 
     @property
     def repeat(self):
-        return 2 * self._repeat[0], 2 * self._repeat[1]
+        return self.repeat_point, self.repeat_length
 
     @repeat.setter
     def repeat(self, repeat):
@@ -63,7 +63,7 @@ class Sample:
 
     @property
     def repeat_length(self):
-        return 2 * self._repeat[1]
+        return 2 * self._repeat[1] if self._repeat[1] > 1 else 0
 
     @repeat_length.setter
     def repeat_length(self, repeat_length):

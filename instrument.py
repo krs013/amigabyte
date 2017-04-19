@@ -133,10 +133,10 @@ class Instrument:
         # this into something that can tell us basically what octave
         # the instrument is in.
 
-        spectrum = np.fft.fft(self.sample.repeated)
-        freqs = np.fft.fftfreq(len(spectrum))
+        spectrum = np.fft.rfft(self.sample.repeated or self.sample.wave)
+        freqs = np.fft.rfftfreq(len(spectrum))
 
-        idx = np.argmax(np.abs(spectrum))
+        idx = np.argmax(np.abs(spectrum)[1:])+1
         freq = freqs[idx]
 
 
@@ -147,7 +147,7 @@ class Instrument:
 
         freq_in_hertz = abs(freq * sample_rate)
         print("freq in hertz: " + str(freq_in_hertz))
-        plt.plot(freqs, abs(spectrum))
+        # plt.plot(freqs, abs(spectrum))
 
 
         # Following what I read here: https://dsp.stackexchange.com/questions/14862/measure-the-snr-of-a-signal-in-the-frequency-domain
@@ -210,7 +210,7 @@ class Instrument:
         # raise NotImplementedError('Still have to write analyze_pitch')
 
         #self.principle_freq = freq_in_hertz
-        self._snr = snr
+        self._snr = snr_db
         self._std_freq = std_freq
 
         
