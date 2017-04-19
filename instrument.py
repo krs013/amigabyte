@@ -137,8 +137,8 @@ class Instrument:
 
         # Find the nearest standard frequency
 
-        lo_std_freq = min(FREQ2MIDI, key=FREQ2MIDI.get)
-        hi_std_freq = max(FREQ2MIDI, key=FREQ2MIDI.get)
+        lo_std_freq = min(freq_array)
+        hi_std_freq = max(freq_array)
         print(str(lo_std_freq) + ", " + str(hi_std_freq))
 
         normalized_freq = freq_in_hertz
