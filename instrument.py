@@ -65,9 +65,9 @@ class Instrument:
                 pitch_sum += (value * NAMES2MIDI[key])
                 avg_midi_pitch = pitch_sum/len(self.pitches)
                 pitch_nums = list(range(60))
-            idx = (np.abs(pitch_nums-avg_midi_pitch)).argmin()
+            idx = (np.abs(np.array(pitch_nums)-avg_midi_pitch)).argmin()
             self._rounded_pitch_num =  pitch_nums[idx]
-        return self._rounded_pitch_um
+        return self._rounded_pitch_num
 
     @property
     def pitch_probs(self):
@@ -134,7 +134,7 @@ class Instrument:
         # this into something that can tell us basically what octave
         # the instrument is in.
 
-        spectrum = np.fft.fft(self.sample)
+        spectrum = np.fft.fft(self.sample.repeated)
         freqs = np.fft.fftfreq(len(spectrum))
 
         idx = np.argmax(np.abs(spectrum))
@@ -144,7 +144,7 @@ class Instrument:
       # return Note.PAL / self._period if self._period > 0 else 0
 
         period = MIDI2MODPITCHES[self.rounded_pitch_num]
-        sample_rate = PAL / period
+        sample_rate = self.PAL / period
 
         freq_in_hertz = abs(freq * sample_rate)
         print("freq in hertz: " + str(freq_in_hertz))
@@ -205,7 +205,7 @@ class Instrument:
         # raise NotImplementedError('Still have to write analyze_pitch')
 
         #self.principle_freq = freq_in_hertz
-        self._snr = snr
+        self._snr = snr_db
         self._std_freq = std_freq
 
         
