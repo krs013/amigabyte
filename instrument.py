@@ -82,25 +82,46 @@ class Instrument:
         self.related = []
         self.last_pos, self.last_note = 0, None
 
-        # Adam's added code
-        self.unique_pitches = 0
-        self.beat_occurrences = 0
-        self.snr = 0
-        self.std_freq = 0
+        self._snr = None
+        self._std_freq = None
+        self._rounded_pitch_num = None
 
-        self.rounded_pitch_num = 0
+    @property
+    def vector(self):
+        return (self.std_freq, self.snr,
+                self.unique_pitches, self.beat_occurrences)
 
-    def get_avg_pitch(self):
-        pitch_sum = 0
-        for key, value in self.pitches.items():
-            pitch_sum += (value * NAMES2MIDI[key])
-        avg_midi_pitch = pitch_sum/len(self.pitches)
-        pitch_nums = list(range(60))
+    @property
+    def unique_pitches(self):
+        return len(self.pitches)
 
-        idx = (np.abs(pitch_nums-avg_midi_pitch)).argmin()
-        self.rounded_pitch_num =  pitch_nums[idx] 
+    @property
+    def beat_occurrences(self):
+        return len(self.beats)
+        
+    @property
+    def std_freq(self):
+        if self._std_freq is None:
+            self.analyze_pitch()
+        return self._std_freq
 
+    @property
+    def snr(self):
+        if self._snr is None:
+            self.analyze_pitch()
+        return self._snr
 
+    @property
+    def rounded_pitch_num(self):
+        if self._rounded_pitch_num is None:
+            pitch_sum = 0
+            for key, value in self.pitches.items():
+                pitch_sum += (value * NAMES2MIDI[key])
+                avg_midi_pitch = pitch_sum/len(self.pitches)
+                pitch_nums = list(range(60))
+            idx = (np.abs(pitch_nums-avg_midi_pitch)).argmin()
+            self._rounded_pitch_num =  pitch_nums[idx]
+        return self._rounded_pitch_um
 
     def add_note(self, note, pos):
         # Record data
@@ -164,7 +185,7 @@ class Instrument:
 
       # return Note.PAL / self._period if self._period > 0 else 0
 
-        period = MIDI2MODPITCHES[rounded_pitch_num]
+        period = MIDI2MODPITCHES[self.rounded_pitch_num]
         sample_rate = PAL / period
 
         freq_in_hertz = abs(freq * sample_rate)
@@ -226,13 +247,8 @@ class Instrument:
         # raise NotImplementedError('Still have to write analyze_pitch')
 
         #self.principle_freq = freq_in_hertz
-        self.snr = snr
-        self.std_freq = std_freq
+        self._snr = snr
+        self._std_freq = std_freq
 
-    def get_distinct_beat(self):
-        self.beat_occurrences = len(self.beats)
-
-    def get_pitch_variance(self):
-        self.unique_pitches = len(self.pitches)
-
+        
 # Instrument.analyze_pitch()
