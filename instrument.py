@@ -60,7 +60,7 @@ class Instrument:
 
     def analyze_pitch(self):
         if not self.sample or not self.sample._wave:
-           raise Exception('No wave to analyze')
+          raise Exception('No wave to analyze')
 
         myWave = [100 * sin(2*pi*n/32) for n in range(32)]
         myWave = np.array(myWave)
@@ -112,8 +112,8 @@ class Instrument:
                 P_s += abs_spectrum[i] * abs_spectrum[i]
         P_s /= len(abs_spectrum)
 
-        snr = P_s / P_n
-        print("snr: " + str(snr))
+        snr_db = 20 * log(P_s / P_n, 10)
+        print("snr_db: " + str(snr_db))
 
         # Signal to noise ratio defined as mean / std deviation # of original signal, not the fft.............
         # snr = np.mean(myWave)/np.std(noise_list)
@@ -134,3 +134,4 @@ class Instrument:
 
     def get_pitch_variance(self):
         self.unique_pitches = len(self.pitches)
+
