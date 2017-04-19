@@ -7,6 +7,21 @@ from random import randint
 from collections import defaultdict
 
 
+FREQ2MIDI = {
+    65.4: 0, 69.3: 1, 73.4: 2, 77.8: 3, 82.4: 4, 87.3: 5,
+    92.5: 6, 98.0: 7, 103.8: 8, 110.0: 9, 116.5: 10, 123.5: 11,
+    130.8: 12, 138.6: 13, 146.8: 14, 155.6: 15, 164.8: 16, 174.6: 17,
+    185.0: 18, 196.0: 19, 207.7: 20, 220.0: 21, 233.1: 22, 246.9: 23,
+    261.6: 24, 277.2: 25, 293.7: 26, 311.1: 27, 329.6: 28, 349.2: 29,
+    370.0: 30, 392.0: 31, 415.3: 32, 440.0: 33, 466.2: 34, 493.9: 35,
+    523.3: 36, 554.4: 37, 587.3: 38, 622.3: 39, 659.3: 40, 698.5: 41,
+    740.0: 42, 784.0: 43, 830.6: 44, 880.0: 45, 932.3: 46, 987.8: 47,
+    1046.5: 48, 1108.7: 49, 1174.7: 50, 1244.5: 51, 1318.5: 52, 1396.9: 53,
+    1480.0: 54, 1568.0: 55, 1661.2: 56, 1760.0: 57, 1864.7: 58, 1975.5: 59 }
+
+
+freq_array = [130.8, 261.6, 392.0, 138.6, 523.3, 784.0, 146.8, 659.3, 622.3, 1046.5, 155.6, 329.6, 415.3, 1568.0, 164.8, 293.7, 1318.5, 220.0, 554.4, 174.6, 466.2, 1864.7, 1975.5, 311.1, 440.0, 185.0, 698.5, 830.6, 65.4, 196.0, 69.3, 1244.5, 1480.0, 73.4, 587.3, 77.8, 207.7, 82.4, 1108.7, 87.3, 932.3, 987.8, 92.5, 349.2, 1760.0, 98.0, 740.0, 103.8, 233.1, 493.9, 110.0, 1396.9, 880.0, 370.0, 116.5, 246.9, 1174.7, 123.5, 1661.2, 277.2]
+
 class Instrument:
 
     BEATS = 16  # Length of beat sequences to track (max 64)
@@ -58,6 +73,10 @@ class Instrument:
         normed[nonzs,:] /= sums[nonzs,np.newaxis]
         return normed
 
+    def find_nearest(value):
+        idx = (np.abs(freq_array-value)).argmin()
+        return array[idx]
+
     def analyze_pitch(self):
         if not self.sample or not self.sample._wave:
           raise Exception('No wave to analyze')
@@ -86,6 +105,7 @@ class Instrument:
         freq = freqs[idx]
         sample_rate = 100 # TODO
         freq_in_hertz = abs(freq * sample_rate)
+        print("freq in hertz: " + str(freq_in_hertz))
         plt.plot(freqs, abs(spectrum))
 
 
@@ -115,9 +135,25 @@ class Instrument:
         snr_db = 20 * log(P_s / P_n, 10)
         print("snr_db: " + str(snr_db))
 
-        # Signal to noise ratio defined as mean / std deviation # of original signal, not the fft.............
-        # snr = np.mean(myWave)/np.std(noise_list)
-        # print(snr)
+        # Find the nearest standard frequency
+
+        lo_std_freq = min(FREQ2MIDI, key=FREQ2MIDI.get)
+        hi_std_freq = max(FREQ2MIDI, key=FREQ2MIDI.get)
+        print(str(lo_std_freq) + ", " + str(hi_std_freq))
+
+        normalized_freq = freq_in_hertz
+
+        while normalized_freq < lo_std_freq:
+            normalized_freq *= 2
+
+        while normalized_freq > hi_std_freq:
+            normalized_freq /= 2
+
+        print("normalized_freq: " + str(normalized_freq))
+
+        idx = (np.abs(freq_array-normalized_freq)).argmin()
+        std_freq =  freq_array[idx]     
+        print("std freq: " + str(std_freq)) 
 
         # Then save another parameter that's something like the magnitude
         # of the dominant pitch fft[dom_freq_dex] divided by the mean of
@@ -135,3 +171,4 @@ class Instrument:
     def get_pitch_variance(self):
         self.unique_pitches = len(self.pitches)
 
+# Instrument.analyze_pitch()
