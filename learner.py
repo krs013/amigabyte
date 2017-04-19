@@ -30,6 +30,9 @@ class Learner:
                                     self.instruments])
         linkage = sch.linkage(instrument_vecs)
         # linkage is a weird format... gotta think about that
+        print(linkage)
+
+
 
         # Assemble fomm's in clusters (needs alignment and combination)
 
@@ -50,6 +53,7 @@ class Learner:
 
 def main(files):
     learner = Learner(files)
+    learner.analyze()
     return learner  # TODO: analyze, etc.
 
 
