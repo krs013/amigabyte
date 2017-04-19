@@ -54,5 +54,15 @@ class Instrument:
         np.abs(fft, fft)
         np.square(fft, fft)
         np.log(fft, fft)
+        dom_freq_dex = np.argmax(fft)
+        # Still needs interpretation, check for off-key notes, and turn
+        # this into something that can tell us basically what octave
+        # the instrument is in.
+
+        # Then save another parameter that's something like the magnitude
+        # of the dominant pitch fft[dom_freq_dex] divided by the mean of
+        # the rest of it or something, so that a bass drum with a strong
+        # but not tonal peak will be distinct from a bass guitar with the
+        # same peak location and magnitude (but more prominent, higher SNR)
         raise NotImplementedError('Still have to write analyze_pitch')
         

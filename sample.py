@@ -70,6 +70,11 @@ class Sample:
         self._repeat = (self._repeat[0], repeat_length // 2)
 
     @property
+    def repeated(self):
+        return self._wave[self.repeat_point:
+                          self.repeat_point+self.repeat_length]
+
+    @property
     def wave(self):
         if self._wave:
             return self._wave[2:]  # Repeat/null junk at beginning?
