@@ -161,22 +161,25 @@ class Instrument:
             if abs_spectrum[i] > max_power:
                 max_power = abs_spectrum[i]
 
-        # P_n = 0
-        # for i in range(1,math.floor(len(abs_spectrum)/2)):
-        #     if (abs_spectrum[i] < max_power/2):
-        #         P_n += abs_spectrum[i] * abs_spectrum[i]
-        # P_n /= len(abs_spectrum)
+        P_n = 0
+        for i in range(1,math.floor(len(abs_spectrum)/2)):
+            if (abs_spectrum[i] < max_power/2):
+                P_n += abs_spectrum[i] * abs_spectrum[i]
+        P_n /= len(abs_spectrum)
 
-        # P_s = 0
-        # for i in range(1,math.floor(len(abs_spectrum)/2)):
-        #     if (abs_spectrum[i] > max_power/2):
-        #         P_s += abs_spectrum[i] * abs_spectrum[i]
-        # P_s /= len(abs_spectrum)
+        P_s = 0
+        for i in range(1,math.floor(len(abs_spectrum)/2)):
+            if (abs_spectrum[i] > max_power/2):
+                P_s += abs_spectrum[i] * abs_spectrum[i]
+        P_s /= len(abs_spectrum)
 
-        snr = log(max_power) - log(np.mean(abs_spectrum))
-        print(snr)
+        # snr = log(max_power) - log(np.mean(abs_spectrum))
+        # print(snr)
 
-        snr_db = 20 * log(P_s / P_n, 10)
+        if P_n == 0:
+            snr_db = 0.5
+        else:
+            snr_db = 20 * log(P_s / P_n, 10)
         print("snr_db: " + str(snr_db))
 
         # Find the nearest standard frequency

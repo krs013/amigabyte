@@ -1,10 +1,10 @@
-import numpber as np
+import numpy as np
 from song import Song
 
 
 def main():
 
-    song = Song(filename='mods/3_pasar_lypsyl_4.mod')
+    song = Song(filename='mods/mods/SimpleMods/3_pasar_lypsyl_4.mod')
 
     bass_pitches, bass_pitch_fomm = song.instruments[8].fomm_pitch()
     bass_beats_fomm = song.instruments[8].fomm_beats()
@@ -60,6 +60,9 @@ def main():
 
     writeFile(newBassline,newTrebleline,songname)
 
+def mimic_test():
+    song = Song(filename='mods/mods/SimpleMods/3_pasar_lypsyl_4.mod')
+    print(len(song.instruments))
 
 def random_test():
     BassPitch2BassPitch = createPitchTable()
