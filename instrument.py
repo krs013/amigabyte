@@ -26,8 +26,9 @@ class Instrument:
 
     BEATS = 16  # Length of beat sequences to track (max 64)
 
-    def __init__(self, sample):
+    def __init__(self, sample, song=None):
         self.sample = sample
+        self.song = song
         self.base_freq = 0
         self.notes = []
         self.pitches = defaultdict(int)
@@ -49,7 +50,7 @@ class Instrument:
         # Record data
         self.notes += [(pos, note)]
         self.pitches[note.pitch] += 1
-        self.beats[pos] += 1
+        self.beats[pos%self.BEATS] += 1  # Or just %64?
         self.effects[note.effect] += 1
 
         # Populate first-order Markov Models

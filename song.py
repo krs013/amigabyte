@@ -1,3 +1,4 @@
+import weakref
 import numpy as np
 from os.path import expanduser
 from itertools import chain, product
@@ -77,8 +78,8 @@ class Song:
     @property
     def instruments(self):
         if not self._instruments:
-            self._instruments = [Instrument(sample) if
-                                 (sample and sample.length>1) else None
+            self._instruments = [Instrument(sample, song=weakref.ref(self))
+                                 if (sample and sample.length>1) else None
                                  for sample in self.samples]
             for n, pattern in enumerate(self.arranged_patterns()):
                 for pos, note in pattern.enumerate_notes(n):
