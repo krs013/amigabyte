@@ -29,6 +29,11 @@ class Learner:
 
         self.collected_song_samples = []
         self.basstreble_parings = None
+        self.bass_cluster = None
+        self.treb_cluster = None
+        self.bassdrum_cluster = None
+        self.snare_cluster = None
+
 
     def make_groups(self,linkage):
         size = len(linkage) + 1
@@ -99,16 +104,23 @@ class Learner:
 
             if flag == 1:
                 break
-            
+        ######################################################################################## 
 
         clusters = temp
+
         bass_row = []
         treb_row = []
+        bassdrum_row = []
+        snare_row = []
 
         for row in clusters:
             #print([int(x) for x in row])
-            print(row)
-            print("======================")
+            # print(row)
+            # print("======================")
+            if self.ideal_bassdrum in row:
+                bassdrum_row = row
+            if self.ideal_hihat in row:
+                snare_row = row
 
 
         for row in clusters:
@@ -122,15 +134,28 @@ class Learner:
                         break
                 break
 
+        self.bass_cluster = bass_row
+        self.treb_cluster = treb_row
+        self.bassdrum_cluster = bassdrum_row
+        self.snare_cluster = snare_row
+
 
         listen = Listen()
         # listen.play_instrument(self.instruments[ideal_hihat])
 
+        print("*************************Bassdrum Row************************")
+        for sample in bassdrum_row:
+            listen.play_instrument(self.instruments[int(sample)])
+
+        print("*************************Snare Row************************")
+        for sample in snare_row:
+            listen.play_instrument(self.instruments[int(sample)])
+
+        print("*************************Bass Row************************")
         for sample in bass_row:
             listen.play_instrument(self.instruments[int(sample)])
 
-        print("*******************************************")
-
+        print("*************************Treble Row************************")
         for sample in treb_row:
             listen.play_instrument(self.instruments[int(sample)])
 
@@ -178,7 +203,7 @@ class Learner:
             # print("Add file:", f)
             song = Song(filename=f)
 
-            if path.split(f)[-1] == "bs1.mod":
+            if path.split(f)[-1] == "song24.mod":
                 ideal_treble = i + 1 - 1
                 ideal_bass = i + 2 - 1
                 # ideal_pad = -1
