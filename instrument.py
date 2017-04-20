@@ -5,6 +5,7 @@ import math
 from math import sin, pi, log
 from random import randint
 from collections import defaultdict
+from weakref import ref
 from tables import *
 
 
@@ -15,7 +16,7 @@ class Instrument:
 
     def __init__(self, sample, song=None):
         self.sample = sample
-        self.song = song
+        self._song = song
         self.notes = []
         self.pitches = defaultdict(int)
         self.beats = defaultdict(int)
@@ -28,6 +29,16 @@ class Instrument:
         self._std_freq = None
         self._rounded_pitch_num = None
         self._pitch_probs = None
+
+    def __bool__(self):
+        return bool(self.notes) and bool(self.sample)
+        
+    @property
+    def song(self):
+        if type(self._song) is ref:
+            return self._song()
+        else:
+            return self._song
 
     @property
     def vector(self):
@@ -134,7 +145,7 @@ class Instrument:
         # the instrument is in.
 
         spectrum = np.fft.rfft(self.sample.repeated or self.sample.wave)
-        freqs = np.fft.rfftfreq(len(spectrum))
+        freqs = np.fft.rfftfreq(len(self.sample.repeated or self.sample.wave))
 
         idx = np.argmax(np.abs(spectrum)[1:])+1
         freq = freqs[idx]
@@ -146,7 +157,7 @@ class Instrument:
         sample_rate = self.PAL / period
 
         freq_in_hertz = abs(freq * sample_rate)
-        print("freq in hertz: " + str(freq_in_hertz))
+        # print("freq in hertz: " + str(freq_in_hertz))
         # plt.plot(freqs, abs(spectrum))
 
 
@@ -180,13 +191,13 @@ class Instrument:
             snr_db = 0.5
         else:
             snr_db = 20 * log(P_s / P_n, 10)
-        print("snr_db: " + str(snr_db))
+        # print("snr_db: " + str(snr_db))
 
         # Find the nearest standard frequency
 
         lo_std_freq = min(FREQ_ARRAY)
         hi_std_freq = max(FREQ_ARRAY)
-        print(str(lo_std_freq) + ", " + str(hi_std_freq))
+        # print(str(lo_std_freq) + ", " + str(hi_std_freq))
 
         normalized_freq = freq_in_hertz
 
@@ -196,11 +207,11 @@ class Instrument:
         while normalized_freq > hi_std_freq:
             normalized_freq /= 2
 
-        print("normalized_freq: " + str(normalized_freq))
+        #print("normalized_freq: " + str(normalized_freq))
 
         idx = (np.abs(FREQ_ARRAY-normalized_freq)).argmin()
         std_freq =  FREQ_ARRAY[idx]     
-        print("std freq: " + str(std_freq)) 
+        # print("std freq: " + str(std_freq)) 
 
         # Then save another parameter that's something like the magnitude
         # of the dominant pitch fft[dom_freq_dex] divided by the mean of

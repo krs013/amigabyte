@@ -76,34 +76,27 @@ class Learner:
         self.pending.extend((path.relpath(f, self.prefix) for f in files))
 
         # Collect all songs (was hoping for less memory consumption)
-        # for f in self.pending:
-        #     song = Song(filename=f)
-        #     self.songs += [song]
-        #     self.instruments.extend(filter(None, song.instruments))
 
-        # # Do clustering stuff, group instruments
-        # instrument_vecs = np.array([instrument.vector for instrument in
-        #                             self.instruments])
-        # linkage = sch.linkage(instrument_vecs)
+        while self.pending:
+            f = self.pending.pop()
+            print("Add file:", f)
+            song = Song(filename=f)
+            self.songs += [song]
+            self.instruments.extend(filter(None, song.instruments))
+            self.learned += [f]
+
+        # Assemble vectors
+        instrument_vecs = np.array([instrument.vector for instrument in
+                                    self.instruments])
+
+        # Standardize axes
+        instrument_vecs /= np.std(instrument_vecs, 0)[np.newaxis, :]
+        instrument_vecs -= np.std(instrument_vecs, 0)[np.newaxis, :]
+
+        # Do clustering stuff, group instruments        
+        linkage = sch.linkage(instrument_vecs, method='ward')
         # linkage is a weird format... gotta think about that
-        rand = np.random.random((20,2))
- #        rand = np.array([[ 0.62069072,  0.28716257],
- # [ 0.87386839,  0.80756872],
- # [ 0.58742085, 0.42972388],
- # [ 0.1732603,   0.53816397],
- # [ 0.72567464,  0.45044234],
- # [ 0.00047757,  0.37084419],
- # [ 0.98540316,  0.92339627],
- # [ 0.71150791,  0.56638905],
- # [ 0.63885578,  0.13505908],
- # [ 0.11304982,  0.75322435]])
-
-
-        print(rand)
-        linkage = sch.linkage(rand)
-        self.make_groups(linkage)
-
-
+        return linkage
 
         # Assemble fomm's in clusters (needs alignment and combination)
 
@@ -124,8 +117,10 @@ class Learner:
 
 def main(files):
     learner = Learner(files)
-    learner.analyze()
-    return learner  # TODO: analyze, etc.
+    linkage = learner.analyze()
+    print('\n'.join(('{:4.0f}, {:4.0f}, {:5.2f}, {:4.0f}'.format(*row)
+                     for row in linkage)))
+    return learner, linkage  # TODO: analyze, etc.
 
 
 if __name__ == '__main__':

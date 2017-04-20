@@ -34,10 +34,6 @@ class Sample:
         return data
 
     @property
-    def wave_bytes(self):
-        return bytes(x+256 if x<0 else x for x in self._wave)
-
-    @property
     def length(self):
         return 2 * self._length
 
@@ -92,3 +88,14 @@ class Sample:
             self._wave += [0] if len(self._wave) % 2 else []  # Even length
             self._length = len(self._wave) // 2
             self.repeat = (2, len(value))
+
+    @property
+    def wave_bytes(self):
+        return bytes(x+256 if x<0 else x for x in self._wave)
+
+    @property
+    def repeated_bytes(self):
+        return bytes(x+256 if x<0 else x for x in self.repeated)
+
+    def __bool__(self):
+        return bool(self.wave) and self.length>1 and bool(self.volume)
