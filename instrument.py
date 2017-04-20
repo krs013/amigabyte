@@ -42,8 +42,8 @@ class Instrument:
 
     @property
     def vector(self):
-        return (FREQ2MIDI[self.std_freq], self.snr,
-                self.unique_pitches, self.beat_occurrences)
+        return (FREQ2MIDI[self.std_freq], self.snr, self.unique_pitches)
+                #self.beat_occurrences)
 
     @property
     def unique_pitches(self):
