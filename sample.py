@@ -92,3 +92,6 @@ class Sample:
             self._wave += [0] if len(self._wave) % 2 else []  # Even length
             self._length = len(self._wave) // 2
             self.repeat = (2, len(value))
+
+    def __bool__(self):
+        return bool(self.wave) and self.length>1 and bool(self.volume)

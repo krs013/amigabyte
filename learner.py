@@ -20,19 +20,28 @@ class Learner:
         self.pending.extend((path.relpath(f, self.prefix) for f in files))
 
         # Collect all songs (was hoping for less memory consumption)
-        for f in self.pending:
+        while self.pending:
+            f = self.pending.pop()
+            print("Add file:", f)
             song = Song(filename=f)
             self.songs += [song]
             self.instruments.extend(filter(None, song.instruments))
+            self.learned += [f]
 
-        # Do clustering stuff, group instruments
+        # Assemble vectors
         instrument_vecs = np.array([instrument.vector for instrument in
                                     self.instruments])
-        linkage = sch.linkage(instrument_vecs)
+
+        # Standardize axes
+        instrument_vecs /= np.std(instrument_vecs, 0)[np.newaxis, :]
+        instrument_vecs -= np.std(instrument_vecs, 0)[np.newaxis, :]
+
+        # Do clustering stuff, group instruments        
+        linkage = sch.linkage(instrument_vecs, method='complete')
         # linkage is a weird format... gotta think about that
-        print(linkage)
-
-
+        print('\n'.join(('{:4d}, {:4d}, {:5.2f}, {:4d}'.format(
+            int(row[0]), int(row[1]), row[2], int(row[3]))
+                     for row in linkage)))
 
         # Assemble fomm's in clusters (needs alignment and combination)
 

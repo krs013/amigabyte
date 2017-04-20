@@ -30,8 +30,7 @@ class Song:
         self.name = data[0:20].rstrip(b'\0').decode()
         for offset in range(20, 950, 30):
             sample = Sample(data[offset:offset+30])
-            if sample:
-                self.samples.append(sample)
+            self.samples.append(sample)
             if sample.name:
                 self.vanity += '\n' + sample.name
         length = data[950]
@@ -79,11 +78,11 @@ class Song:
     def instruments(self):
         if not self._instruments:
             self._instruments = [Instrument(sample, song=weakref.ref(self))
-                                 if (sample and sample.length>1) else None
+                                 if sample else None
                                  for sample in self.samples]
             for n, pattern in enumerate(self.arranged_patterns()):
                 for pos, note in pattern.enumerate_notes(n):
-                    if note.sample and self._instruments[note.sample]:
+                    if note.sample and self.samples[note.sample]:
                         self._instruments[note.sample].add_note(note, pos)
         return self._instruments
 
