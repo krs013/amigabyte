@@ -24,7 +24,7 @@ class Instrument:
         self.counts_pitch = defaultdict(lambda: defaultdict(int))
         self.counts_beats = np.zeros((self.BEATS, self.BEATS))
         self.last_pos, self.last_note = 0, None
-        self.pitch_offset = None
+        self._pitch_offset = None
 
         self._snr = None
         self._std_freq = None
@@ -45,6 +45,12 @@ class Instrument:
     def vector(self):
         return (FREQ2MIDI[self.std_freq], self.snr, self.unique_pitches)
                 #self.beat_occurrences)
+
+    @property
+    def pitch_offset(self):
+        if self._pitch_offset is None:
+            self.analyze_pitch()
+        return self._pitch_offset
 
     @property
     def unique_pitches(self):
@@ -91,7 +97,7 @@ class Instrument:
     @property
     def adjusted_pitch_probs(self):
         adjusted = self.pitch_probs.copy()
-        np.rotate(adjusted, -self.offset)
+        np.rotate(adjusted, self.pitch_offset)
         return adjusted
 
     def add_note(self, note, pos):
@@ -228,7 +234,7 @@ class Instrument:
         print(self.song.instruments.index(self))
         print("named_pitch: " + str(named_pitch) + ", std_midi_pitch: " + str(std_midi_pitch))
 
-        self.pitch_offset = std_midi_pitch - named_pitch 
+        self._pitch_offset = std_midi_pitch - named_pitch 
 
         # Then save another parameter that's something like the magnitude
         # of the dominant pitch fft[dom_freq_dex] divided by the mean of

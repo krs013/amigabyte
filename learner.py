@@ -133,9 +133,7 @@ class Learner:
                     for b in snt:
                         # print(str(a) + ": " + str(b))
                         asdf = -1
-
-
-
+        return clusters
 
     def analyze(self, files=[]):
         self.pending.extend((path.relpath(f, self.prefix) for f in files))
@@ -157,28 +155,7 @@ class Learner:
             print("Add file:", f)
             song = Song(filename=f)
 
-            # But how can you count if there are empty samles?
-            # if f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/coldbeer.mod":
-            #     print("coldbeer treble sample num is " + str(i + 1 - 1))
-            #     ideal_treble = i + 1 - 1
-
-            # elif f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/aladinhampun_henki.mod":
-            #     print("aladinhampun_henki bass sample num is " + str(i + 2))
-            #     ideal_bass = i + 2
-
-            # elif f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/cardiaxx_1.mod":
-            #     print("cardiaxx_1 pad sample num is " + str(i + 2 - 1))
-            #     ideal_pad = i + 2 - 1
-
-            # elif f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/simppagoespoing.mod":
-            #     print("simppagoespoing bassdrum sample num is " + str(i + 1 - 1))
-            #     ideal_bassdrum = i + 1 - 1
-
-            # elif f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/irontear.mod":
-            #     print("song24 hihat sample num is " + str(i + 5 - 1))
-            #     ideal_hihat = i + 5 - 1
-
-            if f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/bs1.mod":
+            if path.split(f)[-1] == "bs1.mod":
                 ideal_treble = i + 1 - 1
                 ideal_bass = i + 11 - 1
                 # ideal_pad = -1
@@ -191,7 +168,8 @@ class Learner:
             self.songs += [song]
             self.instruments.extend(filter(None, song.instruments))
             self.learned += [f]
-            collected_song_samples.append(list(range(i, i+len(list(filter(None, song.instruments))))))
+            collected_song_samples.append(list(range(i, i+len(list(
+                filter(None, song.instruments))))))
             # What about a list of dictionaries?
             i += len(list(filter(None, song.instruments)))
             # print(collected_song_samples[len(collected_song_samples)-1])
@@ -230,15 +208,17 @@ class Learner:
 
         # Do clustering stuff, group instruments        
         linkage = sch.linkage(instrument_vecs, method='ward')
-        # linkage is a weird format... gotta think about that
-
-        self.make_groups(linkage)
-
-        return linkage
+        groups = self.make_groups(linkage)
 
         # Assemble fomm's in clusters (needs alignment and combination)
+        clusters = []
+        for group, seed in filter(lambda x: bool(x[1]), zip(groups, seeds)):
+            cluster = Cluster(self.instruments, seed, group)
+            cluster.combine()
+            clusters += [cluster]
 
         # Find bridging pairs (to construct conditional probs)
+        return linkage
 
     def compose(self):
         # Start with bass or random cluster, select a sample, and make
