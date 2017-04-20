@@ -28,6 +28,7 @@ class Learner:
         self.ideal_hihat = -1
 
         self.collected_song_samples = []
+        self.basstreble_parings = None
 
     def make_groups(self,linkage):
         size = len(linkage) + 1
@@ -154,6 +155,7 @@ class Learner:
                         print(str(a) + ": " + str(b))
                         basstreble_parings.append([a, b])
 
+        self.basstreble_parings = basstreble_parings
         print(basstreble_parings)
 
 
