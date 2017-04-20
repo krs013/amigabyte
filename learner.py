@@ -23,7 +23,7 @@ class Learner:
 
         self.ideal_treble = -1
         self.ideal_bass = -1
-        # self.ideal_pad = -1
+        self.ideal_pad = -1
         self.ideal_bassdrum = -1
         self.ideal_hihat = -1
 
@@ -192,7 +192,7 @@ class Learner:
 
         ideal_treble = -1
         ideal_bass = -1
-        # ideal_pad = -1
+        ideal_pad = -1
         ideal_bassdrum = -1
         ideal_hihat = -1
 
@@ -207,8 +207,19 @@ class Learner:
                 ideal_treble = i + 1 - 1
                 ideal_bass = i + 2 - 1
                 # ideal_pad = -1
-                ideal_bassdrum = i + 3 - 1
-                ideal_hihat = i + 4 - 1
+                # ideal_bassdrum = i + 3 - 1
+                # ideal_hihat = i + 4 - 1
+
+            if path.split(f)[-1] == "bs1.mod":
+                ideal_bassdrum = i + 5 - 1
+                ideal_hihat = i + 8 - 1
+
+            if path.split(f)[-1] == "fucking_disco.mod":
+                idea_pad = i + 5 - 1
+
+            # Idea: Add a bunch of pad samples, so that they don't get mixed in with the other clusters...?
+            # if path.split(f)[-1] == "cardiaxx_1.mod":
+            #     self.ideal_sample_indexes.append(i + 2 - 1)
 
             # for j in range(32):
             #     if song.instruments[j] is None:
@@ -226,14 +237,14 @@ class Learner:
 
         self.ideal_sample_indexes.append(ideal_treble)
         self.ideal_sample_indexes.append(ideal_bass)
-        # self.ideal_sample_indexes.append(ideal_pad)
+        self.ideal_sample_indexes.append(ideal_pad)
         self.ideal_sample_indexes.append(ideal_bassdrum)
         self.ideal_sample_indexes.append(ideal_hihat)
 
 
         self.ideal_treble = ideal_treble
         self.ideal_bass = ideal_bass
-        # self.ideal_pad = ideal_pad
+        self.ideal_pad = ideal_pad
         self.ideal_bassdrum = ideal_bassdrum
         self.ideal_hihat = ideal_hihat
 
@@ -252,7 +263,9 @@ class Learner:
         # Standardize axes
         instrument_vecs /= np.std(instrument_vecs, 0)[np.newaxis, :]
         instrument_vecs -= np.mean(instrument_vecs, 0)[np.newaxis, :]
-        #instrument_vecs *= np.array([1.0,2.0,1.0])[np.newaxis, :]
+
+        instrument_vecs *= np.array([1.0,1.0,1.0])[np.newaxis, :]
+
         # Do clustering stuff, group instruments        
         linkage = sch.linkage(instrument_vecs, method='ward')
         groups = self.make_groups(linkage)
