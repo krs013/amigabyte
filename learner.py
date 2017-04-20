@@ -39,9 +39,7 @@ class Learner:
         # Do clustering stuff, group instruments        
         linkage = sch.linkage(instrument_vecs, method='complete')
         # linkage is a weird format... gotta think about that
-        print('\n'.join(('{:4d}, {:4d}, {:5.2f}, {:4d}'.format(
-            int(row[0]), int(row[1]), row[2], int(row[3]))
-                     for row in linkage)))
+        return linkage
 
         # Assemble fomm's in clusters (needs alignment and combination)
 
@@ -62,8 +60,10 @@ class Learner:
 
 def main(files):
     learner = Learner(files)
-    learner.analyze()
-    return learner  # TODO: analyze, etc.
+    linkage = learner.analyze()
+    print('\n'.join(('{:4.0f}, {:4.0f}, {:5.2f}, {:4.0f}'.format(*row)
+                     for row in linkage)))
+    return learner, linkage  # TODO: analyze, etc.
 
 
 if __name__ == '__main__':

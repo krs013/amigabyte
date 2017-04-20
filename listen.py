@@ -1,5 +1,6 @@
 import pyaudio
 from itertools import chain, islice
+from operator import itemgetter
 from sample import Sample
 from pattern import Note
 
@@ -12,6 +13,16 @@ class Listen:
     def __init__(self, song=None, portaudio=None):
         self.song = song
         self.portaudio = portaudio or pyaudio.PyAudio()
+
+    def play_instrument(self, instrument, duration=2., *, song=None):
+        if type(instrument) is int:
+            if song:
+                instrument = song.instruments[instrument]
+            else:
+                raise Exception('No song to dereference instrument index')
+        pitch = sorted(instrument.pitches.items(), key=itemgetter(1),
+                       reverse=True)[0][0]
+        self.play_note(pitch, sample=instrument.sample, duration=duration)
 
     def play_note(self, note, sample=0, duration=2., *, song=None):
         if type(note) is str:
@@ -27,14 +38,12 @@ class Listen:
             raise Exception('Invalid sample')
         stream = self.portaudio.open(round(note.rate), 1, pyaudio.paInt8,
                                      output=True, frames_per_buffer=self.CHUNK)
-        if sample.repeat_length:
+        if sample.repeated:
             def frames():  # So... this is pretty inefficient...
                 for byte in sample.wave_bytes:
                     yield byte
-                rstart, rstop = sample.repeat
-                rstop += rstart
                 while True:
-                    for byte in sample.wave_bytes[rstart:rstop]:
+                    for byte in sample.repeated_bytes:
                         yield byte
         else:
             def frames():
@@ -43,10 +52,11 @@ class Listen:
                 raise StopIteration
         try:
             framegen = frames()
-            for _ in range(round(note.rate*duration/self.CHUNK)):
+            for _ in range(round(note.rate*duration/self.CHUNK)+1):
                 stream.write(b''+bytearray(islice(framegen, self.CHUNK)))
         except StopIteration:
             pass
         finally:
+            stream.stop_stream()
             stream.close()
             

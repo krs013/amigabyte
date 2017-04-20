@@ -5,6 +5,7 @@ import math
 from math import sin, pi, log
 from random import randint
 from collections import defaultdict
+from weakref import ref
 from tables import *
 
 
@@ -15,7 +16,7 @@ class Instrument:
 
     def __init__(self, sample, song=None):
         self.sample = sample
-        self.song = song
+        self._song = song
         self.notes = []
         self.pitches = defaultdict(int)
         self.beats = defaultdict(int)
@@ -32,6 +33,13 @@ class Instrument:
     def __bool__(self):
         return bool(self.notes) and bool(self.sample)
         
+    @property
+    def song(self):
+        if type(self._song) is ref:
+            return self._song()
+        else:
+            return self._song
+
     @property
     def vector(self):
         return (FREQ2MIDI[self.std_freq], self.snr,
