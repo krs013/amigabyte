@@ -7,6 +7,7 @@ from glob import glob
 from song import Song
 from instrument import Instrument
 from listen import Listen
+from cluster import Cluster
 
 
 class Learner:
@@ -108,56 +109,33 @@ class Learner:
 
         clusters = temp
 
-        bass_row = []
-        treb_row = []
-        bassdrum_row = []
-        snare_row = []
+        self.bass_cluster = next(filter(lambda x: self.ideal_bass in x,
+                                        clusters))
+        self.treb_cluster = next(filter(lambda x: self.ideal_treble in x,
+                                        clusters))
+        self.bassdrum_cluster = next(filter(lambda x: self.ideal_bassdrum in x,
+                                        clusters))
+        self.snare_cluster = next(filter(lambda x: self.ideal_hihat in x,
+                                        clusters))
 
-        for row in clusters:
-            #print([int(x) for x in row])
-            # print(row)
-            # print("======================")
-            if self.ideal_bassdrum in row:
-                bassdrum_row = row
-            if self.ideal_hihat in row:
-                snare_row = row
-
-
-        for row in clusters:
-            #print([int(x) for x in row])
-            # print("======================")
-            bass_row = row
-            if self.ideal_bass in row:
-                for row2 in clusters:
-                    if self.ideal_treble in row2:
-                        treb_row =row2
-                        break
-                break
-
-        self.bass_cluster = bass_row
-        self.treb_cluster = treb_row
-        self.bassdrum_cluster = bassdrum_row
-        self.snare_cluster = snare_row
-
-
-        listen = Listen()
+        # listen = Listen()
         # listen.play_instrument(self.instruments[ideal_hihat])
 
-        print("*************************Bassdrum Row************************")
-        for sample in bassdrum_row:
-            listen.play_instrument(self.instruments[int(sample)])
+        # print("*************************Bassdrum Row**********************")
+        # for sample in bassdrum_row:
+        #     listen.play_instrument(self.instruments[int(sample)])
 
-        print("*************************Snare Row************************")
-        for sample in snare_row:
-            listen.play_instrument(self.instruments[int(sample)])
+        # print("*************************Snare Row************************")
+        # for sample in snare_row:
+        #     listen.play_instrument(self.instruments[int(sample)])
 
-        print("*************************Bass Row************************")
-        for sample in bass_row:
-            listen.play_instrument(self.instruments[int(sample)])
+        # print("*************************Bass Row************************")
+        # for sample in bass_row:
+        #     listen.play_instrument(self.instruments[int(sample)])
 
-        print("*************************Treble Row************************")
-        for sample in treb_row:
-            listen.play_instrument(self.instruments[int(sample)])
+        # print("*************************Treble Row************************")
+        # for sample in treb_row:
+        #     listen.play_instrument(self.instruments[int(sample)])
 
 
         #print(bass_row)
@@ -204,11 +182,15 @@ class Learner:
             song = Song(filename=f)
 
             if path.split(f)[-1] == "song24.mod":
-                ideal_treble = i + 1 - 1
-                ideal_bass = i + 2 - 1
+                ideal_treble = len(self.instruments) + len(list(filter(
+                    None, song.instruments[:5])))
+                ideal_bass = len(self.instruments) + len(list(filter(
+                    None, song.instruments[:2])))
                 # ideal_pad = -1
-                ideal_bassdrum = i + 3 - 1
-                ideal_hihat = i + 4 - 1
+                ideal_bassdrum = len(self.instruments) + len(list(filter(
+                    None, song.instruments[:3])))
+                ideal_hihat = len(self.instruments) + len(list(filter(
+                    None, song.instruments[:4])))
 
             # for j in range(32):
             #     if song.instruments[j] is None:
@@ -257,14 +239,26 @@ class Learner:
         linkage = sch.linkage(instrument_vecs, method='ward')
         groups = self.make_groups(linkage)
 
-        # Assemble fomm's in clusters (needs alignment and combination)
-        clusters = []
-        for group, seed in filter(lambda x: bool(x[1]), zip(groups, seeds)):
-            cluster = Cluster(self.instruments, seed, group)
-            cluster.combine()
-            clusters += [cluster]
+        # Assemble fomm's in clusters
+        print(self.ideal_bass, self.bass_cluster)
+        self.bass_cluster = Cluster(self.instruments, self.ideal_bass,
+                                    self.bass_cluster)
+        self.treb_cluster = Cluster(self.instruments, self.ideal_treble,
+                                    self.treb_cluster)
+        self.bassdrum_cluster = Cluster(self.instruments, self.ideal_bassdrum,
+                                        self.bassdrum_cluster)
+        self.snare_cluster = Cluster(self.instruments, self.ideal_hihat,
+                                     self.snare_cluster)
 
+        arrayprint = lambda x: print('\n'.join(('{:5.2f} '*len(y)).format(
+            *y) for y in x))
+        print('===')
+        arrayprint(self.bass_cluster.fomm_pitch())
+        print('===')
+        arrayprint(self.bass_cluster.fomm_beats())
+        
         # Find bridging pairs (to construct conditional probs)
+
         return linkage
 
     def compose(self):
@@ -289,4 +283,4 @@ def main(files):
 
 
 if __name__ == '__main__':
-    main(argv[1:])
+    main(argv[1:] or glob('SimpleMods/*.mod'))

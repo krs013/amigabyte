@@ -97,7 +97,7 @@ class Instrument:
     @property
     def adjusted_pitch_probs(self):
         adjusted = self.pitch_probs.copy()
-        np.rotate(adjusted, self.pitch_offset)
+        np.roll(adjusted, self.pitch_offset)
         return adjusted
 
     def add_note(self, note, pos):
