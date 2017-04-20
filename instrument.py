@@ -24,6 +24,7 @@ class Instrument:
         self.counts_pitch = defaultdict(lambda: defaultdict(int))
         self.counts_beats = np.zeros((self.BEATS, self.BEATS))
         self.last_pos, self.last_note = 0, None
+        self.pitch_offset = None
 
         self._snr = None
         self._std_freq = None
@@ -218,6 +219,16 @@ class Instrument:
         idx = (np.abs(FREQ_ARRAY-normalized_freq)).argmin()
         std_freq =  FREQ_ARRAY[idx]     
         # print("std freq: " + str(std_freq)) 
+
+
+        std_midi_pitch = FREQ2MIDI[std_freq]
+        named_pitch = self.rounded_pitch_num
+        print("::::::::::::::::::::::::::::::")
+        print(self.song.name)
+        print(self.song.instruments.index(self))
+        print("named_pitch: " + str(named_pitch) + ", std_midi_pitch: " + str(std_midi_pitch))
+
+        self.pitch_offset = std_midi_pitch - named_pitch 
 
         # Then save another parameter that's something like the magnitude
         # of the dominant pitch fft[dom_freq_dex] divided by the mean of

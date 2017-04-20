@@ -23,7 +23,7 @@ class Learner:
 
         self.ideal_treble = -1
         self.ideal_bass = -1
-        self.ideal_pad = -1
+        # self.ideal_pad = -1
         self.ideal_bassdrum = -1
         self.ideal_hihat = -1
 
@@ -116,8 +116,8 @@ class Learner:
                         break
                 break
 
-        print(bass_row)
-        print(treb_row)
+        #print(bass_row)
+        #print(treb_row)
 
         # Find pairings 
         # for s in bass_row:
@@ -131,7 +131,8 @@ class Learner:
                 #print(slist)
                 for a in snb:
                     for b in snt:
-                        print(str(a) + ": " + str(b))
+                        # print(str(a) + ": " + str(b))
+                        asdf = -1
 
 
 
@@ -145,7 +146,7 @@ class Learner:
 
         ideal_treble = -1
         ideal_bass = -1
-        ideal_pad = -1
+        # ideal_pad = -1
         ideal_bassdrum = -1
         ideal_hihat = -1
 
@@ -157,49 +158,56 @@ class Learner:
             song = Song(filename=f)
 
             # But how can you count if there are empty samles?
-            if f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/coldbeer.mod":
-                print("coldbeer treble sample num is " + str(i + 1 - 1))
+            # if f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/coldbeer.mod":
+            #     print("coldbeer treble sample num is " + str(i + 1 - 1))
+            #     ideal_treble = i + 1 - 1
+
+            # elif f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/aladinhampun_henki.mod":
+            #     print("aladinhampun_henki bass sample num is " + str(i + 2))
+            #     ideal_bass = i + 2
+
+            # elif f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/cardiaxx_1.mod":
+            #     print("cardiaxx_1 pad sample num is " + str(i + 2 - 1))
+            #     ideal_pad = i + 2 - 1
+
+            # elif f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/simppagoespoing.mod":
+            #     print("simppagoespoing bassdrum sample num is " + str(i + 1 - 1))
+            #     ideal_bassdrum = i + 1 - 1
+
+            # elif f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/irontear.mod":
+            #     print("song24 hihat sample num is " + str(i + 5 - 1))
+            #     ideal_hihat = i + 5 - 1
+
+            if f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/bs1.mod":
                 ideal_treble = i + 1 - 1
+                ideal_bass = i + 11 - 1
+                # ideal_pad = -1
+                ideal_bassdrum = i + 5 - 1
+                ideal_hihat = i + 8 - 1
 
-            elif f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/aladinhampun_henki.mod":
-                print("aladinhampun_henki bass sample num is " + str(i + 2))
-                ideal_bass = i + 2
-
-            elif f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/cardiaxx_1.mod":
-                print("cardiaxx_1 pad sample num is " + str(i + 2 - 1))
-                ideal_pad = i + 2 - 1
-
-            elif f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/simppagoespoing.mod":
-                print("simppagoespoing bassdrum sample num is " + str(i + 1 - 1))
-                ideal_bassdrum = i + 1 - 1
-
-            elif f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/irontear.mod":
-                print("song24 hihat sample num is " + str(i + 5 - 1))
-                ideal_hihat = i + 5 - 1
-
-            for j in range(32):
-                if song.instruments[j] is None:
-                    print(str(j) + " is none")
+            # for j in range(32):
+            #     if song.instruments[j] is None:
+            #         print(str(j) + " is none")
             self.songs += [song]
             self.instruments.extend(filter(None, song.instruments))
             self.learned += [f]
             collected_song_samples.append(list(range(i, i+len(list(filter(None, song.instruments))))))
             # What about a list of dictionaries?
             i += len(list(filter(None, song.instruments)))
-            print(collected_song_samples[len(collected_song_samples)-1])
-            print("....................")
+            # print(collected_song_samples[len(collected_song_samples)-1])
+            # print("....................")
 
 
         self.ideal_sample_indexes.append(ideal_treble)
         self.ideal_sample_indexes.append(ideal_bass)
-        self.ideal_sample_indexes.append(ideal_pad)
+        # self.ideal_sample_indexes.append(ideal_pad)
         self.ideal_sample_indexes.append(ideal_bassdrum)
         self.ideal_sample_indexes.append(ideal_hihat)
 
 
         self.ideal_treble = ideal_treble
         self.ideal_bass = ideal_bass
-        self.ideal_pad = ideal_pad
+        # self.ideal_pad = ideal_pad
         self.ideal_bassdrum = ideal_bassdrum
         self.ideal_hihat = ideal_hihat
 
