@@ -22,8 +22,8 @@ class Cluster:
         self._fomm_beats = np.zeros((len(PITCH_LIST),)*2)
 
         for n, inst in enumerate(self.instruments):
-            correlation = np.correlate(seed.pitch_probs,
-                                       inst.pitch_probs, 'same')
+            correlation = np.correlate(seed.adjusted_pitch_probs,
+                                       inst.adjusted_pitch_probs, 'same')
             alignment = np.argmax(correlation) - len(correlation)//2
             a, b = align_tables(self._fomm_pitch,
                                 instrument.fomm_pitch(), alignment)

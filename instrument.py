@@ -87,6 +87,12 @@ class Instrument:
             self._pitch_probs /= np.sum(self._pitch_probs)
         return self._pitch_probs
 
+    @property
+    def adjusted_pitch_probs(self):
+        adjusted = self.pitch_probs.copy()
+        np.rotate(adjusted, -self.offset)
+        return adjusted
+
     def add_note(self, note, pos):
         # Record data
         self.notes += [(pos, note)]
