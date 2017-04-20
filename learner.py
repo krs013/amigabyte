@@ -17,7 +17,6 @@ class Learner:
         self.instruments = []
 
     def make_groups(self,linkage):
-        print('\n'.join(('{:4d}, {:4d}, {:4.2f}, {:4d}'.format(int(row[0]), int(row[1]), row[2], int(row[3])) for row in linkage)))
         size = len(linkage) + 1
         print("size: " + str(size))
 
@@ -64,10 +63,12 @@ class Learner:
             i += 1
             
             # develop a stopping heuristic; if (x): break...etc.
-            if i - size + 4 > size:
+            if i - size + 8 > size:
                 break
 
-        print(clusters)
+        for row in clusters:
+            print([int(x) for x in row])
+            print("======================")
 
 
 
@@ -79,7 +80,7 @@ class Learner:
 
         while self.pending:
             f = self.pending.pop()
-            print("Add file:", f)
+            # print("Add file:", f)
             song = Song(filename=f)
             self.songs += [song]
             self.instruments.extend(filter(None, song.instruments))
@@ -96,6 +97,9 @@ class Learner:
         # Do clustering stuff, group instruments        
         linkage = sch.linkage(instrument_vecs, method='ward')
         # linkage is a weird format... gotta think about that
+
+        self.make_groups(linkage)
+
         return linkage
 
         # Assemble fomm's in clusters (needs alignment and combination)
@@ -118,8 +122,8 @@ class Learner:
 def main(files):
     learner = Learner(files)
     linkage = learner.analyze()
-    print('\n'.join(('{:4.0f}, {:4.0f}, {:5.2f}, {:4.0f}'.format(*row)
-                     for row in linkage)))
+    # print('\n'.join(('{:4.0f}, {:4.0f}, {:5.2f}, {:4.0f}'.format(*row)
+    #                 for row in linkage)))
     return learner, linkage  # TODO: analyze, etc.
 
 
