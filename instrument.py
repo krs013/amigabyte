@@ -229,10 +229,10 @@ class Instrument:
 
         std_midi_pitch = FREQ2MIDI[std_freq]
         named_pitch = self.rounded_pitch_num
-        print("::::::::::::::::::::::::::::::")
-        print(self.song.name)
-        print(self.song.instruments.index(self))
-        print("named_pitch: " + str(named_pitch) + ", std_midi_pitch: " + str(std_midi_pitch))
+        # print("::::::::::::::::::::::::::::::")
+        # print(self.song.name)
+        # print(self.song.instruments.index(self))
+        # print("named_pitch: " + str(named_pitch) + ", std_midi_pitch: " + str(std_midi_pitch))
 
         self._pitch_offset = std_midi_pitch - named_pitch 
 
