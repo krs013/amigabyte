@@ -1,13 +1,17 @@
 import numpy as np
 import scipy.cluster.hierarchy as sch
+import copy
 from os import path
 from sys import stderr, argv
 from glob import glob
 from song import Song
 from instrument import Instrument
+from listen import Listen
 
 
 class Learner:
+
+    ideals = []
 
     def __init__(self, files=[]):
         self.pending = [path.abspath(f) for f in files]
@@ -15,19 +19,25 @@ class Learner:
         self.learned = []
         self.songs = []
         self.instruments = []
+        self.ideal_sample_indexes = []
 
     def make_groups(self,linkage):
         size = len(linkage) + 1
         print("size: " + str(size))
+        print("ideal list is " + str(self.ideal_sample_indexes))
 
         clusters = []
-        
+        temp = clusters
+
         # A dictionary that contains where in the clusters list each index maps to
         indices = {}
 
         # Use the size for a stopping heurstic
         i = size
         for row in linkage:
+
+            temp = copy.deepcopy(clusters)
+
             if (row[0] < size and row[1] < size):
                 # Make a new cluster!
                 new_list = [row[0], row[1]]
@@ -61,10 +71,28 @@ class Learner:
                         if indices[key] >=  compare_val:
                             indices[key] -= 1
             i += 1
-            
-            # develop a stopping heuristic; if (x): break...etc.
-            if i - size + 8 > size:
+
+            flag = 0
+
+            # New break heuristic: Run until two ideal_sample_indexes are in the same cluster
+            for cluster in clusters:
+                count = 0
+                for j in self.ideal_sample_indexes:
+                    find = cluster.count(j)
+                    if find > 1:
+                        print("WARNING")
+                        break
+                    count += find
+                if count > 1:
+                    print("collision between clusters")
+                    flag = 1
+                    break
+
+            if flag == 1:
                 break
+            
+
+        clusters = temp
 
         for row in clusters:
             print([int(x) for x in row])
@@ -108,14 +136,28 @@ class Learner:
                 print("simppagoespoing bassdrum sample num is " + str(i + 1 - 1))
                 ideal_bassdrum = i + 1 - 1
 
-            elif f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/aztec_soul.mod":
-                print("song24 snare sample num is " + str(i + 12))
-                ideal_hihat = i + 12
-                
+            elif f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/irontear.mod":
+                print("song24 hihat sample num is " + str(i + 5 - 1))
+                ideal_hihat = i + 5 - 1
+
             self.songs += [song]
             self.instruments.extend(filter(None, song.instruments))
             self.learned += [f]
             i += len(list(filter(None, song.instruments)))
+
+
+        self.ideal_sample_indexes.append(ideal_treble)
+        self.ideal_sample_indexes.append(ideal_bass)
+        self.ideal_sample_indexes.append(ideal_pad)
+        self.ideal_sample_indexes.append(ideal_bassdrum)
+        self.ideal_sample_indexes.append(ideal_hihat)
+
+        # listen = Listen()
+        # listen.play_instrument(self.instruments[ideal_hihat])
+
+        # test_list = [1,2,3,4,1,5,6,7,8,9]
+        # print(test_list.count(1))
+        # print(test_list.count(2,3))
 
         # Assemble vectors
         instrument_vecs = np.array([instrument.vector for instrument in
