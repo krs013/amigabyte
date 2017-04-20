@@ -12,6 +12,7 @@ class Cluster:
         self._sample = self.seed  # Change to sample randomly
         self._fomm_pitch = None
         self._fomm_beats = None
+        self._pitch_probs = None
         self._shifted_fomm_pitch = None
         self._shifted_fomm_beats = None
         self.alignment = np.zeros(len(self.instruments), dtype=int)
@@ -26,12 +27,9 @@ class Cluster:
                 self.instruments[self.seed].adjusted_pitch_probs,
                 inst.adjusted_pitch_probs, 'same')
             alignment = np.argmax(correlation) - len(correlation)//2
-            a, b = self.align_tables(self._fomm_pitch,
-                                     inst.fomm_pitch(), alignment)
-            a += b
-            a, b = self.align_tables(self._fomm_beats,
-                                     inst.fomm_beats(), alignment)
-            a += b
+            a, b = self.align_slices(alignment)
+            self._fomm_pitch[a,a] += inst.fomm_pitch()[b,b]
+            self._fomm_beats[a,a] += inst.fomm_beats()[b,b]
             self.alignment[n] = alignment
             
         # Normalize
@@ -39,7 +37,7 @@ class Cluster:
         zeros = np.where(sums == 0.0)
         nonzs = np.where(sums != 0.0)
         self.fomm_pitch[nonzs,:] /= sums[nonzs,np.newaxis]
-        self.fomm_pitch[zeros,:] = 1.0/self.fomm_pitch.shape[1]
+        self.fomm_pitch[zeros,:] = self.pitch_probs
 
         sums = np.sum(self.fomm_beats, 1)
         zeros = np.where(sums == 0.0)
@@ -48,13 +46,13 @@ class Cluster:
         self.fomm_beats[zeros,0] = 1.0
 
     @staticmethod
-    def align_tables(t1, t2, ofst):
-        if ofst == 0:
-            return t1, t2
-        elif ofst < 0:
-            return t1[:ofst,:ofst], t2[-ofst:,-ofst:]
-        elif ofst > 0:
-            return t1[ofst:,ofst:], t2[:-ofst,:-ofst]
+    def align_slices(offset):
+        if offset == 0:
+            return slice(None), slice(None)
+        elif offset < 0:
+            return slice(None, offset), slice(-offset, None)
+        elif offset > 0:
+            return slice(offset, None), slice(None, -offset)
         else:
             raise ValueError('wtf')
 
@@ -68,6 +66,7 @@ class Cluster:
         self._sample = choice(range(len(self.instruments)))
         self._shifted_fomm_pitch = None
         self._shifted_fomm_beats = None
+        self._pitch_probs = None
         
     @property
     def fomm_pitch(self):
@@ -75,10 +74,8 @@ class Cluster:
             self.combine()
         if self._shifted_fomm_pitch is None:
             self._shifted_fomm_pitch = np.zeros((len(PITCH_LIST),)*2)
-            a, b = self.align_tables(self._fomm_pitch,
-                                     self._shifted_fomm_pitch,
-                                     self.alignment[self._sample])
-            b = a
+            a, b = self.align_slices(self.alignment[self._sample])
+            self._shifted_fomm_pitch[b,b] = self._fomm_pitch[a,a]
         return self._shifted_fomm_pitch
         
     @property
@@ -87,8 +84,16 @@ class Cluster:
             self.combine()
         if self._shifted_fomm_beats is None:
             self._shifted_fomm_beats = np.zeros((16,)*2)
-            a, b = self.align_tables(self._fomm_pitch,
-                                     self._shifted_fomm_pitch,
-                                     self.alignment[self._sample])
-            b = a
+            a, b = self.align_slices(self.alignment[self._sample])
+            self._shifted_fomm_beats[b,b] = self._fomm_beats[a,a]
         return self._shifted_fomm_beats
+
+    @property
+    def pitch_probs(self):
+        if self._pitch_probs is None:
+            self._pitch_probs = np.zeros(len(PITCH_LIST))
+            for n, inst in enumerate(self.instruments):
+                a, b = self.align_slices(self.alignment[n])
+                self._pitch_probs[a] += inst.pitch_probs[b]
+            self._pitch_probs /= np.sum(self._pitch_probs)
+        return self._pitch_probs
