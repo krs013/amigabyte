@@ -86,44 +86,13 @@ class Learner:
 
         # Collect all songs (was hoping for less memory consumption)
 
-        i = 0
-
-        ideal_treble = -1
-        ideal_bass = -1
-        ideal_pad = -1
-        ideal_bassdrum = -1
-        ideal_hihat = -1
-
         while self.pending:
             f = self.pending.pop()
-            #print("Add file:", f)
+            # print("Add file:", f)
             song = Song(filename=f)
-
-            # But how can you count if there are empty samles?
-            if f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/coldbeer.mod":
-                print("coldbeer treble sample num is " + str(i + 1 - 1))
-                ideal_treble = i + 1 - 1
-
-            elif f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/aladinhampun_henki.mod":
-                print("aladinhampun_henki bass sample num is " + str(i + 2))
-                ideal_bass = i + 2
-
-            elif f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/cardiaxx_1.mod":
-                print("cardiaxx_1 pad sample num is " + str(i + 2 - 1))
-                ideal_pad = i + 2 - 1
-
-            elif f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/simppagoespoing.mod":
-                print("simppagoespoing bassdrum sample num is " + str(i + 1 - 1))
-                ideal_bassdrum = i + 1 - 1
-
-            elif f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/aztec_soul.mod":
-                print("song24 snare sample num is " + str(i + 12))
-                ideal_hihat = i + 12
-                
             self.songs += [song]
             self.instruments.extend(filter(None, song.instruments))
             self.learned += [f]
-            i += len(list(filter(None, song.instruments)))
 
         # Assemble vectors
         instrument_vecs = np.array([instrument.vector for instrument in
@@ -135,13 +104,16 @@ class Learner:
 
         # Do clustering stuff, group instruments        
         linkage = sch.linkage(instrument_vecs, method='ward')
-        # linkage is a weird format... gotta think about that
+        groups = self.make_groups(linkage)
 
-        self.make_groups(linkage)
+        # Assemble fomm's in clusters (needs alignment and combination)
+        for group in groups:
+            pass
+
+
 
         return linkage
 
-        # Assemble fomm's in clusters (needs alignment and combination)
 
         # Find bridging pairs (to construct conditional probs)
 
