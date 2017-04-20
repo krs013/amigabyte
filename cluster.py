@@ -69,10 +69,10 @@ class Cluster:
         n = choice(range(len(self.instruments)))
         self._sample = self.instruments[n]
         a, b = self.align_tables(self._fomm_pitch, self._shifted_fomm_pitch,
-                                 self.alignment[n]))
+                                 self.alignment[n])
         b = a
         a, b = self.align_tables(self._fomm_pitch, self._shifted_fomm_pitch,
-                                 self.alignment[n]))
+                                 self.alignment[n])
         b = a
         
     @property
