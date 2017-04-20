@@ -24,7 +24,7 @@ class Instrument:
         self.counts_pitch = defaultdict(lambda: defaultdict(int))
         self.counts_beats = np.zeros((self.BEATS, self.BEATS))
         self.last_pos, self.last_note = 0, None
-        self.offset = None
+        self.pitch_offset = None
 
         self._snr = None
         self._std_freq = None
@@ -222,7 +222,7 @@ class Instrument:
         print(self.song.instruments.index(self))
         print("named_pitch: " + str(named_pitch) + ", std_midi_pitch: " + str(std_midi_pitch))
 
-        #offset = 
+        self.pitch_offset = std_midi_pitch - named_pitch 
 
         # Then save another parameter that's something like the magnitude
         # of the dominant pitch fft[dom_freq_dex] divided by the mean of
