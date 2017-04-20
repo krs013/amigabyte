@@ -149,17 +149,17 @@ class Learner:
         basstreble_parings = []
 
         for slist in self.collected_song_samples:
-            snb = [i for i in slist if i in bass_row]
-            snt = [i for i in slist if i in treb_row]
+            snb = [i for i in slist if i in self.bass_cluster]
+            snt = [i for i in slist if i in self.treb_cluster]
             if snb and snt:
                 #print(slist)
                 for a in snb:
                     for b in snt:
-                        print(str(a) + ": " + str(b))
+                        #print(str(a) + ": " + str(b))
                         basstreble_parings.append([a, b])
 
         self.basstreble_parings = basstreble_parings
-        print(basstreble_parings)
+        #print(basstreble_parings)
 
     def analyze(self, files=[]):
         self.pending.extend((path.relpath(f, self.prefix) for f in files))
@@ -254,7 +254,6 @@ class Learner:
         groups = self.make_groups(linkage)
 
         # Assemble fomm's in clusters
-        print(self.ideal_bass, self.bass_cluster)
         self.bass_cluster = Cluster(self.instruments, self.ideal_bass,
                                     self.bass_cluster)
         self.treb_cluster = Cluster(self.instruments, self.ideal_treble,
@@ -267,9 +266,9 @@ class Learner:
         arrayprint = lambda x: print('\n'.join(('{:5.2f} '*len(y)).format(
             *y) for y in x))
         print('===')
-        arrayprint(self.bass_cluster.fomm_pitch())
+        arrayprint(self.bass_cluster.fomm_pitch)
         print('===')
-        arrayprint(self.bass_cluster.fomm_beats())
+        arrayprint(self.bass_cluster.fomm_beats)
         
         # Find bridging pairs (to construct conditional probs)
 
