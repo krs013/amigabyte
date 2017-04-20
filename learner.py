@@ -37,7 +37,7 @@ class Learner:
         instrument_vecs -= np.std(instrument_vecs, 0)[np.newaxis, :]
 
         # Do clustering stuff, group instruments        
-        linkage = sch.linkage(instrument_vecs, method='complete')
+        linkage = sch.linkage(instrument_vecs, method='ward')
         # linkage is a weird format... gotta think about that
         return linkage
 
