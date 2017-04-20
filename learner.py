@@ -101,13 +101,18 @@ class Learner:
             
 
         clusters = temp
-
         bass_row = []
         treb_row = []
 
         for row in clusters:
             #print([int(x) for x in row])
-            #print("======================")
+            print(row)
+            print("======================")
+
+
+        for row in clusters:
+            #print([int(x) for x in row])
+            # print("======================")
             bass_row = row
             if self.ideal_bass in row:
                 for row2 in clusters:
@@ -115,6 +120,19 @@ class Learner:
                         treb_row =row2
                         break
                 break
+
+
+        listen = Listen()
+        # listen.play_instrument(self.instruments[ideal_hihat])
+
+        for sample in bass_row:
+            listen.play_instrument(self.instruments[int(sample)])
+
+        print("*******************************************")
+
+        for sample in treb_row:
+            listen.play_instrument(self.instruments[int(sample)])
+
 
         #print(bass_row)
         #print(treb_row)
@@ -124,6 +142,8 @@ class Learner:
         #     for slist in self.collected_song_samples:
         #         for s2 in slist:
 
+        basstreble_parings = []
+
         for slist in self.collected_song_samples:
             snb = [i for i in slist if i in bass_row]
             snt = [i for i in slist if i in treb_row]
@@ -131,10 +151,10 @@ class Learner:
                 #print(slist)
                 for a in snb:
                     for b in snt:
-                        # print(str(a) + ": " + str(b))
-                        asdf = -1
+                        print(str(a) + ": " + str(b))
+                        basstreble_parings.append([a, b])
 
-
+        print(basstreble_parings)
 
 
     def analyze(self, files=[]):
@@ -154,7 +174,7 @@ class Learner:
 
         while self.pending:
             f = self.pending.pop()
-            print("Add file:", f)
+            # print("Add file:", f)
             song = Song(filename=f)
 
             # But how can you count if there are empty samles?
@@ -178,12 +198,12 @@ class Learner:
             #     print("song24 hihat sample num is " + str(i + 5 - 1))
             #     ideal_hihat = i + 5 - 1
 
-            if f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/bs1.mod":
+            if f == "/home/adam/CS673/amigabyte/mods/mods/SimpleMods/song24.mod":
                 ideal_treble = i + 1 - 1
-                ideal_bass = i + 11 - 1
+                ideal_bass = i + 2 - 1
                 # ideal_pad = -1
-                ideal_bassdrum = i + 5 - 1
-                ideal_hihat = i + 8 - 1
+                ideal_bassdrum = i + 3 - 1
+                ideal_hihat = i + 4 - 1
 
             # for j in range(32):
             #     if song.instruments[j] is None:
@@ -213,8 +233,7 @@ class Learner:
 
         self.collected_song_samples = collected_song_samples
 
-        # listen = Listen()
-        # listen.play_instrument(self.instruments[ideal_hihat])
+        
 
         # test_list = [1,2,3,4,1,5,6,7,8,9]
         # print(test_list.count(1))
@@ -226,8 +245,8 @@ class Learner:
 
         # Standardize axes
         instrument_vecs /= np.std(instrument_vecs, 0)[np.newaxis, :]
-        instrument_vecs -= np.std(instrument_vecs, 0)[np.newaxis, :]
-
+        instrument_vecs -= np.mean(instrument_vecs, 0)[np.newaxis, :]
+        #instrument_vecs *= np.array([1.0,2.0,1.0])[np.newaxis, :]
         # Do clustering stuff, group instruments        
         linkage = sch.linkage(instrument_vecs, method='ward')
         # linkage is a weird format... gotta think about that
