@@ -5,6 +5,7 @@ from sys import stderr, argv
 from glob import glob
 from song import Song
 from instrument import Instrument
+from listen import Listen
 
 
 class Learner:
@@ -65,10 +66,17 @@ class Learner:
             # develop a stopping heuristic; if (x): break...etc.
             if i - size + 8 > size:
                 break
-
+        listen = Listen()
         for row in clusters:
-            print([int(x) for x in row])
-            print("======================")
+            print([int(x) for x in row], flush=True)
+            try:
+                for n in row:
+                    listen.play_instrument(self.instruments[int(n)])
+            except KeyboardInterrupt:
+                pass
+            print("======================", flush=True)
+
+        
 
 
 

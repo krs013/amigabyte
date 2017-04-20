@@ -1,0 +1,5 @@
+Bass Lead Pad Kick Snare File
+2    5    1   3    4     song24.mod
+5    8    -   1    3     jcge2.mod
+9    F    3   A    E     4mats-madness.mod
+
