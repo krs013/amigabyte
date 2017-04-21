@@ -21,6 +21,8 @@ class Cluster:
     def combine(self):
         self._fomm_pitch = np.zeros((len(PITCH_LIST),)*2)
         self._fomm_beats = np.zeros((BEATS_WINDOW+1,)*2)
+        arrayprint = lambda x: print('\n'.join(('{:4.2f} '*len(y)).format(
+            *y) for y in x))
 
         for n, inst in enumerate(self.instruments):
             correlation = np.correlate(
@@ -30,9 +32,14 @@ class Cluster:
             a, b = self.align_slices(alignment)
             self._fomm_pitch[a,a] += inst.fomm_pitch()[b,b]
             self._fomm_beats[a,a] += inst.fomm_beats()[b,b]
+            # arrayprint(inst.fomm_beats())
+            # print('=========')
+            # print()
             self.alignment[n] = alignment
             
         # Normalize
+        for n in range(BEATS_WINDOW):
+            self.fomm_beats[n,:n] = 0.0
         sums = np.sum(self.fomm_pitch, 1)
         zeros = np.where(sums == 0.0)
         nonzs = np.where(sums != 0.0)

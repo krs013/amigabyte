@@ -104,12 +104,12 @@ def addMutation(pattern):
 
 def writeFile(Bassline,
     Lead,
-    Bassdrum,
+    Kick,
     Snare,
     songname,
     bass_sample, 
     treb_sample,
-    bassdrum_sample,
+    kick_sample,
     snare_sample):
 
     song = Song(name=songname)
@@ -121,7 +121,7 @@ def writeFile(Bassline,
     # sample.wave = [100 * sin(2*pi*n/32) for n in range(32)]
     song.samples.append(bass_sample)
     song.samples.append(treb_sample)
-    song.samples.append(bassdrum_sample)
+    song.samples.append(kick_sample)
     song.samples.append(snare_sample)
 
     note_d = Note()
@@ -152,7 +152,7 @@ def writeFile(Bassline,
             leadChannel[int(leadNotes.timestep)] = note
 
     bdChannel = pattern[2]
-    for bdNotes in Bassdrum:
+    for bdNotes in Kick:
         note = Note()
         note.sample = 3 # Change this
         note.pitch = PITCHES[MIDI2MODPITCHES[bdNotes.pitch]]

@@ -254,7 +254,7 @@ def generator(BP2BP,
     TT2TT, 
     bass_sample, 
     treb_sample, 
-    bassdrum_sample, 
+    kick_sample, 
     bdpitch,
     bd2bd,
     snare_sample, 
@@ -266,12 +266,12 @@ def generator(BP2BP,
     Bassline = generateBassline2(BT2BT, BP2BP)
     print("bassline done")
     Trebleline = generateTrebleline2(TT2TT, TP2TP)
-    Bassdrumline = generateDrum(bd2bd, bdpitch)
+    Kickline = generateDrum(bd2bd, bdpitch)
     Snareline = generateDrum(sn2sn, snpitch)
 
     newTrebleline = []
     newBassline = []
-    newBassdrumline = []
+    newKickline = []
     newSnareline = []
 
     for i in range(64//BEATS_WINDOW):
@@ -281,9 +281,9 @@ def generator(BP2BP,
         for note in Bassline:
             newNote = NoteObj(int(note.pitch), int(note.timestep + i*16))
             newBassline.append(newNote)
-        for note in Bassdrumline:
+        for note in Kickline:
             newNote = NoteObj(int(note.pitch), int(note.timestep + i*16))
-            newBassdrumline.append(newNote)
+            newKickline.append(newNote)
         for note in Snareline:
             newNote = NoteObj(int(note.pitch), int(note.timestep + i*16))
             newSnareline.append(newNote)
@@ -292,12 +292,12 @@ def generator(BP2BP,
 
     writeFile(newBassline,
         newTrebleline,
-        newBassdrumline,
+        newKickline,
         newSnareline,
         songname, 
         bass_sample, 
         treb_sample,
-        bassdrum_sample,
+        kick_sample,
         snare_sample
         )
 

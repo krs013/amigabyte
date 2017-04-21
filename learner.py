@@ -28,14 +28,14 @@ class Learner:
         self.ideal_treble = -1
         self.ideal_bass = -1
         self.ideal_pad = -1
-        self.ideal_bassdrum = -1
+        self.ideal_kick = -1
         self.ideal_hihat = -1
 
         self.collected_song_samples = []
         self.basstreble_parings = None
         self.bass_cluster = None
         self.treb_cluster = None
-        self.bassdrum_cluster = None
+        self.kick_cluster = None
         self.snare_cluster = None
 
 
@@ -116,7 +116,7 @@ class Learner:
                                         clusters))
         self.treb_cluster = next(filter(lambda x: self.ideal_treble in x,
                                         clusters))
-        self.bassdrum_cluster = next(filter(lambda x: self.ideal_bassdrum in x,
+        self.kick_cluster = next(filter(lambda x: self.ideal_kick in x,
                                         clusters))
         self.snare_cluster = next(filter(lambda x: self.ideal_hihat in x,
                                         clusters))
@@ -124,8 +124,8 @@ class Learner:
         # listen = Listen()
         # listen.play_instrument(self.instruments[ideal_hihat])
 
-        # print("*************************Bassdrum Row**********************")
-        # for sample in bassdrum_row:
+        # print("*************************Kick Row**********************")
+        # for sample in kick_row:
         #     listen.play_instrument(self.instruments[int(sample)])
 
         # print("*************************Snare Row************************")
@@ -171,11 +171,11 @@ class Learner:
 
         i = 0
 
-        ideal_treble = -1
-        ideal_bass = -1
-        ideal_pad = -1
-        ideal_bassdrum = -1
-        ideal_hihat = -1
+        ideal_treble = None
+        ideal_bass = None
+        ideal_pad = None
+        ideal_kick = None
+        ideal_hihat = None
 
         collected_song_samples = []
 
@@ -189,19 +189,17 @@ class Learner:
                     None, song.instruments[:5])))
                 ideal_bass = len(self.instruments) + len(list(filter(
                     None, song.instruments[:2])))
-                # ideal_pad = -1
-
-                #ideal_bassdrum = len(self.instruments) + len(list(filter(
-                #    None, song.instruments[:3])))
-                #ideal_hihat = len(self.instruments) + len(list(filter(
-                #    None, song.instruments[:4])))
-
 
             if path.split(f)[-1] == "bs1.mod":
-                ideal_bassdrum = i + 5 - 1
-                ideal_hihat = i + 8 - 1
+                ideal_kick = len(self.instruments) + len(list(filter(
+                    None, song.instruments[:5])))
+                ideal_hihat = len(self.instruments) + len(list(filter(
+                    None, song.instruments[:8])))
 
-            if path.split(f)[-1] == "fucking_disco.mod":
+                #ideal_kick = i + 5 - 1
+                #ideal_hihat = i + 8 - 1
+
+            if path.split(f)[-1] == "fucking_disco2.mod":
                 idea_pad = i + 5 - 1
 
             # Idea: Add a bunch of pad samples, so that they don't get mixed in with the other clusters...?
@@ -224,14 +222,14 @@ class Learner:
         self.ideal_sample_indexes.append(ideal_treble)
         self.ideal_sample_indexes.append(ideal_bass)
         self.ideal_sample_indexes.append(ideal_pad)
-        self.ideal_sample_indexes.append(ideal_bassdrum)
+        self.ideal_sample_indexes.append(ideal_kick)
         self.ideal_sample_indexes.append(ideal_hihat)
 
 
         self.ideal_treble = ideal_treble
         self.ideal_bass = ideal_bass
         self.ideal_pad = ideal_pad
-        self.ideal_bassdrum = ideal_bassdrum
+        self.ideal_kick = ideal_kick
         self.ideal_hihat = ideal_hihat
 
         self.collected_song_samples = collected_song_samples
@@ -265,8 +263,8 @@ class Learner:
         # trebpick = choice(self.treb_cluster)
         # treb_sample = self.instruments[int(trebpick)].sample
 
-        # lopick = choice(self.bassdrum_cluster)
-        # bassdrum_sample = self.instruments[int(lopick)].sample
+        # lopick = choice(self.kick_cluster)
+        # kick_sample = self.instruments[int(lopick)].sample
         # bdpitch = self.instruments[int(lopick)]._rounded_pitch_num
 
         # hipick = choice(self.snare_cluster)
@@ -280,8 +278,8 @@ class Learner:
                                     self.bass_cluster)
         self.treb_cluster = Cluster(self.instruments, self.ideal_treble,
                                     self.treb_cluster)
-        self.bassdrum_cluster = Cluster(self.instruments, self.ideal_bassdrum,
-                                        self.bassdrum_cluster)
+        self.kick_cluster = Cluster(self.instruments, self.ideal_kick,
+                                        self.kick_cluster)
         self.snare_cluster = Cluster(self.instruments, self.ideal_hihat,
                                      self.snare_cluster)
 
@@ -298,10 +296,12 @@ class Learner:
         #self.treb_cluster.new_sample()
         treb_sample = self.treb_cluster.sample.sample
 
-        bassdrum_sample = self.bassdrum_cluster.sample.sample
-        bdpitch = self.bassdrum_cluster.sample.rounded_pitch_num
+        kick_sample = self.kick_cluster.sample.sample
+        print(self.kick_cluster.seed, self.kick_cluster._sample)
+        bdpitch = self.kick_cluster.sample.rounded_pitch_num
 
         snare_sample = self.snare_cluster.sample.sample
+        print(self.snare_cluster.seed, self.snare_cluster._sample)
         snpitch = self.snare_cluster.sample.rounded_pitch_num
 
         generator(self.bass_cluster.fomm_pitch, 
@@ -310,9 +310,9 @@ class Learner:
             self.treb_cluster.fomm_beats,
             bass_sample,
             treb_sample,
-            bassdrum_sample,
+            kick_sample,
             bdpitch,
-            self.bassdrum_cluster.fomm_beats,
+            self.kick_cluster.fomm_beats,
             snare_sample,
             snpitch,
             self.snare_cluster.fomm_beats

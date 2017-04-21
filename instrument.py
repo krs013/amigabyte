@@ -104,14 +104,14 @@ class Instrument:
         # Record data
         self.notes += [(pos, note)]
         self.pitches[note.pitch] += 1
-        self.beats[pos] += 1  # Or just %64?
+        self.beats[pos%64] += 1  # Or just %64?
         self.effects[note.effect] += 1
 
         # Populate first-order Markov Models
         self.counts_pitch[self.last_note][note.pitch] += 1
-        if pos < self.BEATS:
-            self.counts_beats[self.last_pos][pos] += 1
-            self.last_pos = pos
+        if pos%64 < self.BEATS: # and pos%self.BEATS > self.last_pos:
+            self.counts_beats[self.last_pos][pos%64] += 1
+            self.last_pos = pos%64
         else:
             self.last_pos = -1
         self.last_note = note.pitch
