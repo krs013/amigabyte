@@ -68,7 +68,7 @@ def removeInstrument(pattern):
     removePick = choice(removeList)
     removeLengths = [4,8,16,32]
     lengthPick = choice(removeLengths)
-    for i in range(64 - lengthpick, 64):
+    for i in range(64 - lengthPick, 64):
         pattern[int(removePick)][i] = None
     return pattern
 
