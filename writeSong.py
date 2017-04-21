@@ -6,7 +6,7 @@ from pattern import Pattern, Note
 import copy
 from numpy.random import choice
 import random
-from tables import *n
+from tables import *
 
 
 class NoteObj:
@@ -20,7 +20,7 @@ class NoteObj:
 		
 def rhythmMutation(pattern):
     newPattern = pattern
-    print("rhythm")
+    print("rhythm, why are you running?")
     channelList = [0,1] # Only remove treble or bass for now
     channelPick = int(choice(channelList))
     timestepList = list(range(16))
@@ -88,28 +88,41 @@ def keyModulation(pattern):
 
 
 def addMutation(pattern):
-    mutationChoices = [1,2,3,4]
+    mutationChoices = [1,2,3]
     pick = choice(mutationChoices)
+    print(pick)
     if (pick == 1):
         newPattern = keyModulation(pattern)    
-    if (pick == 2):
+    elif (pick == 2):
         newPattern = removeInstrument(pattern)
-    if (pick == 3):
+    elif (pick == 3):
         newPattern = minorKeyModulation(pattern)
     else:
         newPattern = rhythmMutation(pattern)
     return newPattern
 
 
-def writeFile(Bassline,Lead,songname):
+def writeFile(Bassline,
+    Lead,
+    Bassdrum,
+    Snare,
+    songname,
+    bass_sample, 
+    treb_sample,
+    bassdrum_sample,
+    snare_sample):
+
     song = Song(name=songname)
 
     # It needs at least one sample. I'll just make a simple one
-    sample = Sample(name='sine')
-
+    # sample = Sample(name='sine')
+    # sample = bass_sample
     # I think the samples are supposed to have a power of 2 length
-    sample.wave = [100 * sin(2*pi*n/32) for n in range(32)]
-    song.samples.append(sample)
+    # sample.wave = [100 * sin(2*pi*n/32) for n in range(32)]
+    song.samples.append(bass_sample)
+    song.samples.append(treb_sample)
+    song.samples.append(bassdrum_sample)
+    song.samples.append(snare_sample)
 
     note_d = Note()
     note_d.sample = 1
@@ -124,16 +137,16 @@ def writeFile(Bassline,Lead,songname):
     for bassNotes in Bassline:
         note = Note()
         note.sample = 1 # Change this
-        note.pitch = PITCHES[MIDI2MODPITCHES[bassNotes.pitch + 12]]
+        note.pitch = PITCHES[MIDI2MODPITCHES[bassNotes.pitch]]
         if (bassNotes.timestep < 64):
             #print(bassNotes.timestep)
-            basslineChannel[int(bassNotes.timestep)] = note
+            basslineChannel[int(bassNotes.timestep) - 12] = note
     
     leadChannel = pattern[1]
     for leadNotes in Lead:
         note = Note()
-        note.sample = 1 # Change this
-        note.pitch = PITCHES[MIDI2MODPITCHES[leadNotes.pitch + 24]]
+        note.sample = 2 # Change this
+        note.pitch = PITCHES[MIDI2MODPITCHES[leadNotes.pitch]]
         if (leadNotes.timestep < 64):
             #print(int(leadNotes.timestep))
             leadChannel[int(leadNotes.timestep)] = note

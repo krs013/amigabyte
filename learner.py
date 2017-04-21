@@ -8,6 +8,9 @@ from song import Song
 from instrument import Instrument
 from listen import Listen
 from cluster import Cluster
+from generate import generator
+from numpy.random import choice
+
 
 
 class Learner:
@@ -253,6 +256,30 @@ class Learner:
         linkage = sch.linkage(instrument_vecs, method='ward')
         groups = self.make_groups(linkage)
 
+        ########################################################
+        # Assemble the Samples
+
+        bl = list(range(len(self.bass_cluster)))
+        basspick = choice(bl)
+        bass_sample = self.instruments[basspick].sample
+
+        tl = list(range(len(self.treb_cluster)))
+        trebpick = choice(tl)
+        treb_sample = self.instruments[trebpick].sample
+
+        ll = list(range(len(self.bassdrum_cluster)))
+        lopick = choice(ll)
+        bassdrum_sample = self.instruments[lopick].sample
+        bdpitch = self.instruments[lopick]._rounded_pitch_num
+
+        hl = list(range(len(self.snare_cluster)))
+        hipick = choice(hl)
+        snare_sample = self.instruments[hipick].sample
+        snpitch = self.instruments[hipick]._rounded_pitch_num
+
+
+        ########################################################
+
         # Assemble fomm's in clusters
         self.bass_cluster = Cluster(self.instruments, self.ideal_bass,
                                     self.bass_cluster)
@@ -271,6 +298,22 @@ class Learner:
         arrayprint(self.bass_cluster.fomm_beats)
         
         # Find bridging pairs (to construct conditional probs)
+
+
+
+        generator(self.bass_cluster.fomm_pitch, 
+            self.bass_cluster.fomm_beats, 
+            self.treb_cluster.fomm_pitch, 
+            self.treb_cluster.fomm_beats,
+            bass_sample,
+            treb_sample,
+            bassdrum_sample,
+            bdpitch,
+            self.bassdrum_cluster.fomm_beats,
+            snare_sample,
+            snpitch,
+            self.snare_cluster.fomm_beats
+            )
 
         return linkage
 
