@@ -359,19 +359,19 @@ class Learner:
 
         arrayprint = lambda x: print('\n'.join(('{:4.2f} '*len(y)).format(
             *y) for y in x))
-        print('===')
-        arrayprint(self.bass_cluster.fomm_pitch)
-        print('===')
-        arrayprint(self.bass_cluster.fomm_beats)
-        
+        #print('===')
+        # arrayprint(self.bass_cluster.fomm_pitch)
+        #print('===')
+        #arrayprint(self.bass_cluster.fomm_beats)
+         
         # Find bridging pairs (to construct conditional probs)
         bp2tp = self.bass_cluster.pitch_correlation(self.treb_cluster,
                                                     self.basstreble_parings)
-        arrayprint(bp2tp)
+        #arrayprint(bp2tp)
 
         bt2tt = self.bass_cluster.beats_correlation(self.treb_cluster,
                                                     self.basstreble_parings)
-        arrayprint(bt2tt)
+        #arrayprint(bt2tt)
 
         #self.bass_cluster.new_sample()
         bass_sample = self.bass_cluster.sample.sample
