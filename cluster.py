@@ -31,7 +31,7 @@ class Cluster:
             sdex2 = other.instruments[dex2].notes[0][1].sample
             a, b = self.align_slices(self.alignment[dex1])
             c, d = other.align_slices(other.alignment[dex2])
-            correlation[a,c] += song.pitch_correlation(sdex1, sdex2)[b,d]
+            correlation[a,c] += song.pitch_correlation(sdex2, sdex1)[b,d]
         sums = np.sum(correlation, 1)
         zeros = np.where(sums == 0)
         nonzs = np.where(sums != 0)
@@ -51,7 +51,7 @@ class Cluster:
             sdex2 = other.instruments[dex2].notes[0][1].sample
             a, b = self.align_slices(self.alignment[dex1])
             c, d = other.align_slices(other.alignment[dex2])
-            correlation[a,c] += song.beats_correlation(sdex1, sdex2)[b,d]
+            correlation[a,c] += song.beats_correlation(sdex2, sdex1)[b,d]
         sums = np.sum(correlation, 1)
         zeros = np.where(sums == 0)
         nonzs = np.where(sums != 0)
