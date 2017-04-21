@@ -301,7 +301,7 @@ class Learner:
         bassdrum_sample = self.bassdrum_cluster.sample.sample
         bdpitch = self.bassdrum_cluster.sample.rounded_pitch_num
 
-        snare_pitch = self.snare_cluster.sample.sample
+        snare_sample = self.snare_cluster.sample.sample
         snpitch = self.snare_cluster.sample.rounded_pitch_num
 
         generator(self.bass_cluster.fomm_pitch, 

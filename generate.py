@@ -222,7 +222,7 @@ def generateDrum(t2t, pitch):
 
     nextIndex = 0
     weights = t2t[nextIndex]
-    l = list(range(numTimesteps))
+    l = list(range(numTimesteps+1))
     #pick = choice(l, p=weights)
     pick = 0
     note = NoteObj(-1,pick)
@@ -231,7 +231,7 @@ def generateDrum(t2t, pitch):
         prevpick = pick
         weights = t2t[pick]
         pick = choice(l, p=weights)
-        if pick <= prevpick:
+        if pick == numTimesteps:
             break
         else:
             note = NoteObj(-1,pick)
@@ -262,7 +262,9 @@ def generator(BP2BP,
     sn2sn
     ):
     
+    print("in generator")
     Bassline = generateBassline2(BT2BT, BP2BP)
+    print("bassline done")
     Trebleline = generateTrebleline2(TT2TT, TP2TP)
     Bassdrumline = generateDrum(bd2bd, bdpitch)
     Snareline = generateDrum(sn2sn, snpitch)
