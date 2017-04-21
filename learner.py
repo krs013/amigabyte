@@ -392,7 +392,9 @@ class Learner:
             self.kick_cluster.fomm_beats,
             snare_sample,
             snpitch,
-            self.snare_cluster.fomm_beats
+            self.snare_cluster.fomm_beats,
+            bp2tp,
+            bt2tt
             )
 
         return linkage

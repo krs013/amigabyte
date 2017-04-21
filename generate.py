@@ -164,10 +164,13 @@ def generateTrebleLine3(
     currentBassNote = numTimesteps #
     if Bassline[0].timestep == 0:
         currentBassNote = 0
+
+    TT2TT[:-1,:-1] *= BT2TT
     while True:
 
         # Compute a dot produce of the two lists
-        combinedWeights = [a*b for a,b in zip(TT2TT[pick], BT2TT[currentBassNote])]
+        #combinedWeights = [a*b for a,b in zip(TT2TT[pick], BT2TT[currentBassNote])]
+        combinedWeights = TT2TT[pick]
         # Update currentBassNote. How?
         
         # Renomalize the combinedWeights list
@@ -257,7 +260,9 @@ def generator(BP2BP,
     bd2bd,
     snare_sample, 
     snpitch,
-    sn2sn
+    sn2sn,
+    BP2TP,
+    BT2TT
     ):
     
     Bassline = generateBassline2(BT2BT, BP2BP)
