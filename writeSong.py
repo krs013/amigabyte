@@ -70,10 +70,13 @@ def removeInstrument(pattern):
     lengthPick = choice(removeLengths)
     for i in range(64 - lengthPick, 64):
         if removePick == 2:
-            pattern[int(removePick)][i] = None
-            pattern[int(removePick+1)][i] = None
+            if pattern[int(removePick)][i]:
+                pattern[int(removePick)][i].effect = (12,0)
+            if pattern[int(removePick+1)][i]:
+                pattern[int(removePick+1)][i].effect = (12,0)
         else:
-            pattern[int(removePick)][i] = None
+            if pattern[int(removePick)][i]:
+                pattern[int(removePick)][i].effect = (12,0)
     return pattern
 
 
@@ -91,6 +94,9 @@ def keyModulation(pattern):
                     newNote.pitch = MIDI2NAMES[NAMES2MIDI[note.pitch]
                                                + offset - 1]
                 else:
+                    if NAMES2MIDI[note.pitch] < 3:
+                        note.pitch += 12
+
                     newNote.pitch = MIDI2NAMES[NAMES2MIDI[note.pitch] + offset]
                 newPattern[i][j] = newNote
             j += 1
@@ -111,7 +117,9 @@ def addMutation(pattern):
         pattern2 = keyModulation(pattern)
         newPattern = removeInstrument(pattern2)
     else:
-        newPattern = rhythmMutation(pattern)
+        #newPattern = rhythmMutation(pattern)
+        newPattern = removeInstrument(pattern)
+
     return newPattern
 
 
@@ -190,7 +198,8 @@ def writeFile(Bassline,
 
     patternCopy2 = copy.deepcopy(pattern)
     mutatedPattern2 = addMutation(patternCopy2)
-    song.patterns.append(mutatedPattern2)
+    mutatedPattern2b = addMutation(mutatedPattern2)
+    song.patterns.append(mutatedPattern2b)
 
     patternCopy3 = copy.deepcopy(pattern)
     mutatedPattern3 = addMutation(patternCopy3)

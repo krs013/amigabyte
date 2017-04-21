@@ -29,11 +29,12 @@ class Learner:
         self.instruments = []
         self.ideal_sample_indexes = []
 
-        self.ideal_treble = -1
-        self.ideal_bass = -1
-        self.ideal_pad = -1
-        self.ideal_kick = -1
-        self.ideal_hihat = -1
+        self.ideal_treble = None
+        self.ideal_bass = None
+        self.ideal_pad = None
+        self.ideal_kick = None
+        self.ideal_hihat = None
+        self.ideal_snare = None
 
         self.collected_song_samples = []
         self.basstreble_parings = None
@@ -205,7 +206,11 @@ class Learner:
                 #ideal_hihat = i + 8 - 1
 
             if path.split(f)[-1] == "fucking_disco2.mod":
-                idea_pad = i + 5 - 1
+                ideal_pad = i + 5 - 1
+
+            if path.split(f)[-1] == "jcge2.mod":
+                self.ideal_snare = len(self.instruments) + len(list(filter(
+                    None, song.instruments[:3])))
 
             # Idea: Add a bunch of pad samples, so that they don't get mixed in with the other clusters...?
             # if path.split(f)[-1] == "cardiaxx_1.mod":
@@ -373,13 +378,11 @@ class Learner:
         #self.treb_cluster.new_sample()
         treb_sample = self.treb_cluster.sample.sample
 
-        kick_sample = self.kick_cluster.sample.sample
-        print(self.kick_cluster.seed, self.kick_cluster._sample)
-        bdpitch = self.kick_cluster.sample.rounded_pitch_num
+        kick_sample = self.instruments[self.ideal_snare].sample
+        bdpitch = self.instruments[self.ideal_snare].rounded_pitch_num
 
-        snare_sample = self.snare_cluster.sample.sample
-        print(self.snare_cluster.seed, self.snare_cluster._sample)
-        snpitch = self.snare_cluster.sample.rounded_pitch_num
+        snare_sample = self.instruments[self.ideal_kick].sample
+        snpitch = self.instruments[self.ideal_hihat].rounded_pitch_num
 
         generator(self.bass_cluster.fomm_pitch, 
             self.bass_cluster.fomm_beats, 
