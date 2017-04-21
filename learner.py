@@ -359,6 +359,10 @@ class Learner:
         arrayprint(self.bass_cluster.fomm_beats)
         
         # Find bridging pairs (to construct conditional probs)
+        bp2tp = self.bass_cluster.pitch_correlation(self.treb_cluster,
+                                                    self.basstreble_parings)
+        arrayprint(bp2tp)
+
         #self.bass_cluster.new_sample()
         bass_sample = self.bass_cluster.sample.sample
         #self.treb_cluster.new_sample()
