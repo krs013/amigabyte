@@ -259,20 +259,19 @@ class Learner:
         ########################################################
         # Assemble the Samples
 
-        basspick = choice(self.bass_cluster)
-        bass_sample = self.instruments[int(basspick)].sample
+        # basspick = choice(self.bass_cluster)
+        # bass_sample = self.instruments[int(basspick)].sample
 
-        trebpick = choice(self.treb_cluster)
-        treb_sample = self.instruments[int(trebpick)].sample
+        # trebpick = choice(self.treb_cluster)
+        # treb_sample = self.instruments[int(trebpick)].sample
 
-        lopick = choice(self.bassdrum_cluster)
-        bassdrum_sample = self.instruments[int(lopick)].sample
-        bdpitch = self.instruments[int(lopick)]._rounded_pitch_num
+        # lopick = choice(self.bassdrum_cluster)
+        # bassdrum_sample = self.instruments[int(lopick)].sample
+        # bdpitch = self.instruments[int(lopick)]._rounded_pitch_num
 
-        hipick = choice(self.snare_cluster)
-        snare_sample = self.instruments[int(hipick)].sample
-        snpitch = self.instruments[int(hipick)]._rounded_pitch_num
-
+        # hipick = choice(self.snare_cluster)
+        # snare_sample = self.instruments[int(hipick)].sample
+        # snpitch = self.instruments[int(hipick)]._rounded_pitch_num
 
         ########################################################
 
@@ -294,8 +293,16 @@ class Learner:
         arrayprint(self.bass_cluster.fomm_beats)
         
         # Find bridging pairs (to construct conditional probs)
+        #self.bass_cluster.new_sample()
+        bass_sample = self.bass_cluster.sample.sample
+        #self.treb_cluster.new_sample()
+        treb_sample = self.treb_cluster.sample.sample
 
+        bassdrum_sample = self.bassdrum_cluster.sample.sample
+        bdpitch = self.bassdrum_cluster.sample.rounded_pitch_num
 
+        snare_pitch = self.snare_cluster.sample.sample
+        snpitch = self.snare_cluster.sample.rounded_pitch_num
 
         generator(self.bass_cluster.fomm_pitch, 
             self.bass_cluster.fomm_beats, 

@@ -4,10 +4,11 @@ from numpy.random import choice
 from random import randint
 from writeSong import writeFile, NoteObj
 import time
+from tables import *
 
 numPitches = 60
 numTimesteps = 16 # 4 timesteps per beat
-
+# numTimesteps = BEATS_WINDOW
 
 # Create a randomized table for testing purposes
 def createPitchTable():
@@ -84,16 +85,16 @@ def generateBassline2(BassTimestep2BassTimestep, BassPitch2BassPitch):
 
     nextIndex = 0
     weights = BassTimestep2BassTimestep[nextIndex]
-    l = list(range(numTimesteps))
+    l = list(range(numTimesteps+1))
     #pick = choice(l, p=weights)
-    pick = 0
+    pick = numTimesteps
     note = NoteObj(-1,pick)
     Bassline.append(note)
     while True:
         prevpick = pick
         weights = BassTimestep2BassTimestep[pick]
         pick = choice(l, p=weights)
-        if pick <= prevpick:
+        if pick == numTimesteps:
             break
         else:
             note = NoteObj(-1,pick)
@@ -106,7 +107,7 @@ def generateBassline2(BassTimestep2BassTimestep, BassPitch2BassPitch):
         weights = BassPitch2BassPitch[prevPitch]
         pick = choice(l, p=weights)
         note.pitch = pick
-        # prevPitch = pick
+        prevPitch = pick
     
     for note in Bassline:
         print(str(note.timestep) + ", " + str(note.pitch))
@@ -120,16 +121,16 @@ def generateTrebleline2(TrebleTimestep2TrebleTimestep, TreblePitch2TreblePitch):
 
     nextIndex = 0
     weights = TrebleTimestep2TrebleTimestep[nextIndex]
-    l = list(range(numTimesteps))
+    l = list(range(numTimesteps+1))
     #pick = choice(l, p=weights)
-    pick = 0
+    pick = numTimesteps
     note = NoteObj(-1,pick)
     Trebleline.append(note)
     while True:
         prevpick = pick
         weights = TrebleTimestep2TrebleTimestep[pick]
         pick = choice(l, p=weights)
-        if pick <= prevpick:
+        if pick == numTimesteps:
             break
         else:
             note = NoteObj(-1,pick)
@@ -142,7 +143,7 @@ def generateTrebleline2(TrebleTimestep2TrebleTimestep, TreblePitch2TreblePitch):
         weights = TreblePitch2TreblePitch[prevPitch]
         pick = choice(l, p=weights)
         note.pitch = pick
-        # prevPitch = pick
+        prevPitch = pick
     
     for note in Trebleline:
         print(str(note.timestep) + ", " + str(note.pitch))

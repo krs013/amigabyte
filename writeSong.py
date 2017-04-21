@@ -72,7 +72,7 @@ def keyModulation(pattern):
     keychanges = [-3, -2,-3,5]
     offset = choice(keychanges)
     print("key change " + str(offset))
-    for i in range(4):
+    for i in range(2):
         j = 0
         for note in pattern[i]:
             if note is not None:
@@ -150,6 +150,24 @@ def writeFile(Bassline,
         if (leadNotes.timestep < 64):
             #print(int(leadNotes.timestep))
             leadChannel[int(leadNotes.timestep)] = note
+
+    bdChannel = pattern[2]
+    for bdNotes in Bassdrum:
+        note = Note()
+        note.sample = 3 # Change this
+        note.pitch = PITCHES[MIDI2MODPITCHES[bdNotes.pitch]]
+        if (bdNotes.timestep < 64):
+            #print(int(leadNotes.timestep))
+            bdChannel[int(bdNotes.timestep)] = note
+
+    snareChannel = pattern[3]
+    for snareNotes in Snare:
+        note = Note()
+        note.sample = 4 # Change this
+        note.pitch = PITCHES[MIDI2MODPITCHES[snareNotes.pitch]]
+        if (snareNotes.timestep < 64):
+            #print(int(leadNotes.timestep))
+            snareChannel[int(snareNotes.timestep)] = note
 
     song.patterns.append(pattern)
 
