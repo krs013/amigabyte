@@ -1,6 +1,8 @@
 import numpy as np
 import scipy.cluster.hierarchy as sch
 import copy
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
 from os import path
 from sys import stderr, argv
 from glob import glob
@@ -10,6 +12,8 @@ from listen import Listen
 from cluster import Cluster
 from generate import generator
 from numpy.random import choice
+from tables import *
+
 
 
 
@@ -234,7 +238,10 @@ class Learner:
 
         self.collected_song_samples = collected_song_samples
 
-        
+
+
+       
+
 
         # test_list = [1,2,3,4,1,5,6,7,8,9]
         # print(test_list.count(1))
@@ -253,6 +260,67 @@ class Learner:
         # Do clustering stuff, group instruments        
         linkage = sch.linkage(instrument_vecs, method='ward')
         groups = self.make_groups(linkage)
+
+
+        # Let's try plotting here
+
+        # fig = plt.figure()
+        # ax = fig.add_subplot(111, projection='3d')
+
+        # x = []
+        # y = []
+        # z = []
+
+        # #FREQ2MIDI[self.std_freq], self.snr, self.unique_pitches
+
+        # for index in self.bass_cluster:
+        #     x.append(FREQ2MIDI[self.instruments[int(index)].std_freq])
+        #     y.append(self.instruments[int(index)].snr)
+        #     z.append(self.instruments[int(index)].unique_pitches)
+        # bplot = ax.scatter(x,y,z,c='r', marker = 'o', s = 50)
+
+        # a = []
+        # b = []
+        # c = []
+
+        # #FREQ2MIDI[self.std_freq], self.snr, self.unique_pitches
+
+        # for index in self.treb_cluster:
+        #     a.append(FREQ2MIDI[self.instruments[int(index)].std_freq])
+        #     b.append(self.instruments[int(index)].snr)
+        #     c.append(self.instruments[int(index)].unique_pitches)
+        # tplot = ax.scatter(a,b,c, c='b', marker = '^', s = 50)
+        
+        # a = []
+        # b = []
+        # c = []
+
+        # #FREQ2MIDI[self.std_freq], self.snr, self.unique_pitches
+
+        # for index in self.snare_cluster:
+        #     a.append(FREQ2MIDI[self.instruments[int(index)].std_freq])
+        #     b.append(self.instruments[int(index)].snr)
+        #     c.append(self.instruments[int(index)].unique_pitches)
+        # splot = ax.scatter(a,b,c, c='g', marker = '*', s = 50)
+
+        # a = []
+        # b = []
+        # c = []
+
+        # #FREQ2MIDI[self.std_freq], self.snr, self.unique_pitches
+
+        # for index in self.bassdrum_cluster:
+        #     a.append(FREQ2MIDI[self.instruments[int(index)].std_freq])
+        #     b.append(self.instruments[int(index)].snr)
+        #     c.append(self.instruments[int(index)].unique_pitches)
+        # bdplot = ax.scatter(a,b,c, c='y', marker = 'p', s = 50)
+
+        # ax.set_xlabel('Frequency',fontsize=20)
+        # ax.set_ylabel('Signal-to-Noise Ratio',fontsize=20)
+        # ax.set_zlabel('Unique Pitches',fontsize=20)
+        # ax.set_title('Instrument Clusters', fontsize=50)
+        # plt.legend((bplot,tplot,splot,bdplot), ('Bass','Treble','Snare','Bassdrum'))
+        # plt.show()
 
         ########################################################
         # Assemble the Samples
