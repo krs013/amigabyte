@@ -363,6 +363,10 @@ class Learner:
                                                     self.basstreble_parings)
         arrayprint(bp2tp)
 
+        bt2tt = self.bass_cluster.beats_correlation(self.treb_cluster,
+                                                    self.basstreble_parings)
+        arrayprint(bt2tt)
+
         #self.bass_cluster.new_sample()
         bass_sample = self.bass_cluster.sample.sample
         #self.treb_cluster.new_sample()

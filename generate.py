@@ -149,12 +149,7 @@ def generateTrebleline2(TrebleTimestep2TrebleTimestep, TreblePitch2TreblePitch):
 
     return Trebleline
 
-def generateTrebleLine3(
-    Bassline
-    TP2TP,
-    BP2TP,
-    TT2TT,
-    BT2TT)
+def generateTrebleLine3(Bassline, TP2TP, BP2TP, TT2TT, BT2TT):
 
     Trebleline = []
     pick = numTimesteps

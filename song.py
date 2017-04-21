@@ -110,7 +110,7 @@ class Song:
         arrayed[nonzs,:] /= sums[nonzs,np.newaxis]
         return arrayed
         
-    def beats_correlation(self, prob_dex, cond_dex, size=16):
+    def beats_correlation(self, prob_dex, cond_dex, size=BEATS_WINDOW):
         counts = np.zeros((size, size))
         prob_beats = [False]*4
         cond_beats = [False]*4
