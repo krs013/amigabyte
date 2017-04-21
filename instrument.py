@@ -11,7 +11,7 @@ from tables import *
 
 class Instrument:
 
-    BEATS = 16  # Length of beat sequences to track (max 64)
+    BEATS = BEATS_WINDOW  # Length of beat sequences to track (max 64)
     PAL = 3579545.25
 
     def __init__(self, sample, song=None):
@@ -22,8 +22,8 @@ class Instrument:
         self.beats = defaultdict(int)
         self.effects = defaultdict(int)
         self.counts_pitch = defaultdict(lambda: defaultdict(int))
-        self.counts_beats = np.zeros((self.BEATS, self.BEATS))
-        self.last_pos, self.last_note = 0, None
+        self.counts_beats = np.zeros((self.BEATS+1, self.BEATS+1))
+        self.last_pos, self.last_note = -1, None
         self._pitch_offset = None
 
         self._snr = None
@@ -104,14 +104,17 @@ class Instrument:
         # Record data
         self.notes += [(pos, note)]
         self.pitches[note.pitch] += 1
-        self.beats[pos%self.BEATS] += 1  # Or just %64?
+        self.beats[pos] += 1  # Or just %64?
         self.effects[note.effect] += 1
 
         # Populate first-order Markov Models
         self.counts_pitch[self.last_note][note.pitch] += 1
-        self.counts_beats[self.last_pos][pos%self.BEATS] += 1
+        if pos < self.BEATS:
+            self.counts_beats[self.last_pos][pos] += 1
+            self.last_pos = pos
+        else:
+            self.last_pos = -1
         self.last_note = note.pitch
-        self.last_pos = pos % self.BEATS
 
     def fomm_pitch(self):
         arrayed = np.array([[self.counts_pitch[p1][p2] for p2 in PITCH_LIST]

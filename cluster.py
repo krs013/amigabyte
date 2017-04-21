@@ -20,7 +20,7 @@ class Cluster:
 
     def combine(self):
         self._fomm_pitch = np.zeros((len(PITCH_LIST),)*2)
-        self._fomm_beats = np.zeros((16,)*2)
+        self._fomm_beats = np.zeros((BEATS_WINDOW+1,)*2)
 
         for n, inst in enumerate(self.instruments):
             correlation = np.correlate(
@@ -60,7 +60,7 @@ class Cluster:
     def sample(self):
         if self._sample is None:
             self.new_sample()
-        return self._sample
+        return self.instruments[self._sample]
 
     def new_sample(self):
         self._sample = choice(range(len(self.instruments)))
@@ -83,7 +83,7 @@ class Cluster:
         if self._fomm_beats is None:
             self.combine()
         if self._shifted_fomm_beats is None:
-            self._shifted_fomm_beats = np.zeros((16,)*2)
+            self._shifted_fomm_beats = np.zeros((BEATS_WINDOW+1,)*2)
             a, b = self.align_slices(self.alignment[self._sample])
             self._shifted_fomm_beats[b,b] = self._fomm_beats[a,a]
         return self._shifted_fomm_beats

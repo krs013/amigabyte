@@ -23,15 +23,15 @@ def rhythmMutation(pattern):
     print("rhythm, why are you running?")
     channelList = [0,1] # Only remove treble or bass for now
     channelPick = int(choice(channelList))
-    timestepList = list(range(16))
+    timestepList = list(range(BEATS_WINDOW))
     timestepPick = int(choice(timestepList))
-    while timestepPick < 16:
+    while timestepPick < BEATS_WINDOW:
         if pattern[channelPick][timestepPick] is not None:
             break
         else:
             timestepPick += 1
     i = 0
-    for i in range(4):
+    for i in range(64//BEATS_WINDOW):
         shiftIndex = timestepPick + (i * 16)
         while shiftIndex < 16*(i+1):
             if (shiftIndex != 0):
@@ -45,7 +45,7 @@ def rhythmMutation(pattern):
 # Specifically, turns all E naturals into Eb...
 def minorKeyModulation(pattern):
     print("minor")
-    for i in range(4):
+    for i in range(64//BEATS_WINDOW):
         j = 0
         for note in pattern[i]:
             if note is not None:
