@@ -14,7 +14,10 @@ class Sample:
             self.read_bytes(data)
 
     def read_bytes(self, data):
-        name = data[:22].rstrip(b'\x00').decode()
+        try:
+            name = data[:22].rstrip(b'\x00').decode()
+        except UnicodeDecodeError:
+            name = 'invalid'
         if name:
             self.name = name
         self._length = int.from_bytes(data[22:24], 'big')

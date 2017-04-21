@@ -213,6 +213,20 @@ class Learner:
                 self.ideal_snare = len(self.instruments) + len(list(filter(
                     None, song.instruments[:3])))
 
+            if path.split(f)[-1] == 'chiptune_no_139.mod':
+                ideal_treble = len(self.instruments) + len(list(filter(
+                    None, song.instruments[:9])))
+                ideal_bass = len(self.instruments) + len(list(filter(
+                    None, song.instruments[:1])))
+                ideal_kick = len(self.instruments) + len(list(filter(
+                    None, song.instruments[:11])))
+                ideal_hihat = len(self.instruments) + len(list(filter(
+                    None, song.instruments[:16])))
+                ideal_snare = ideal_hihat
+                ideal_pad = len(self.instruments) + len(list(filter(
+                    None, song.instruments[:10])))
+
+
             # Idea: Add a bunch of pad samples, so that they don't get mixed in with the other clusters...?
             # if path.split(f)[-1] == "cardiaxx_1.mod":
             #     self.ideal_sample_indexes.append(i + 2 - 1)
@@ -242,6 +256,7 @@ class Learner:
         self.ideal_pad = ideal_pad
         self.ideal_kick = ideal_kick
         self.ideal_hihat = ideal_hihat
+        self.ideal_snare = ideal_snare
 
         self.collected_song_samples = collected_song_samples
 

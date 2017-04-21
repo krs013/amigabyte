@@ -111,7 +111,8 @@ class Channel:
                     carryover = note.sample
                 else:
                     if not carryover:
-                        raise SampleCarryoverError
+                        #raise SampleCarryoverError
+                        note.pitch = None
                     note.sample = carryover
         return carryover
                     

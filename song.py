@@ -28,7 +28,10 @@ class Song:
             self.fill_missing_samples()
 
     def read_bytes(self, data):
-        self.name = data[0:20].rstrip(b'\0').decode()
+        try:
+            self.name = data[0:20].rstrip(b'\0').decode()
+        except UnicodeDecodeError:
+            self.name = 'invalid'
         for offset in range(20, 950, 30):
             sample = Sample(data[offset:offset+30])
             self.samples.append(sample)
