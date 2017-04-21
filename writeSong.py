@@ -29,7 +29,7 @@ def rhythmMutation(pattern):
             timestepPick += 1
 
     rhythmPick = choice([-2,2])
-    if timestep + rhythmPick >= 0 and timestep + rhythmPick < 64
+    if timestep + rhythmPick >= 0 and timestep + rhythmPick < 64:
         pattern[channelPick][int(timestepPick + rhythmPick)] = pattern[channelPick][timestepPick]
         pattern[channelPick][timestepPick] = None
     else:
