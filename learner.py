@@ -387,18 +387,18 @@ class Learner:
 
         def newsamples():
             self.bass_cluster.new_sample()
-            bass_sample = self.bass_cluster.sample.sample
             self.treb_cluster.new_sample()
-            treb_sample = self.treb_cluster.sample.sample
 
         def makesong():
             generator(self.bass_cluster.fomm_pitch,
                       self.bass_cluster.fomm_beats,
                       self.treb_cluster.fomm_pitch,
-                      self.treb_cluster.fomm_beats, bass_sample, treb_sample,
-                      kick_sample, bdpitch, self.kick_cluster.fomm_beats,
-                      snare_sample, snpitch, self.snare_cluster.fomm_beats,
-                      bp2tp, bt2tt )
+                      self.treb_cluster.fomm_beats,
+                      self.bass_cluster.sample.sample,
+                      self.treb_cluster.sample.sample, kick_sample,
+                      bdpitch, self.kick_cluster.fomm_beats,
+                      snare_sample, snpitch,
+                      self.snare_cluster.fomm_beats, bp2tp, bt2tt )
 
         makesong()
         set_trace()
