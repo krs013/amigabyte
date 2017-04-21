@@ -259,23 +259,19 @@ class Learner:
         ########################################################
         # Assemble the Samples
 
-        bl = list(range(len(self.bass_cluster)))
-        basspick = choice(bl)
-        bass_sample = self.instruments[basspick].sample
+        basspick = choice(self.bass_cluster)
+        bass_sample = self.instruments[int(basspick)].sample
 
-        tl = list(range(len(self.treb_cluster)))
-        trebpick = choice(tl)
-        treb_sample = self.instruments[trebpick].sample
+        trebpick = choice(self.treb_cluster)
+        treb_sample = self.instruments[int(trebpick)].sample
 
-        ll = list(range(len(self.bassdrum_cluster)))
-        lopick = choice(ll)
-        bassdrum_sample = self.instruments[lopick].sample
-        bdpitch = self.instruments[lopick]._rounded_pitch_num
+        lopick = choice(self.bassdrum_cluster)
+        bassdrum_sample = self.instruments[int(lopick)].sample
+        bdpitch = self.instruments[int(lopick)]._rounded_pitch_num
 
-        hl = list(range(len(self.snare_cluster)))
-        hipick = choice(hl)
-        snare_sample = self.instruments[hipick].sample
-        snpitch = self.instruments[hipick]._rounded_pitch_num
+        hipick = choice(self.snare_cluster)
+        snare_sample = self.instruments[int(hipick)].sample
+        snpitch = self.instruments[int(hipick)]._rounded_pitch_num
 
 
         ########################################################

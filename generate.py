@@ -286,7 +286,7 @@ def generator(BP2BP,
             newNote = NoteObj(int(note.pitch), int(note.timestep + i*16))
             newSnareline.append(newNote)
 
-    songname = "creation_" + time.strtime('%Y%m%d-%H%M%S') + ".mod"
+    songname = "creation" + time.strftime('%H%M%S') + ".mod"
 
     writeFile(newBassline,
         newTrebleline,
