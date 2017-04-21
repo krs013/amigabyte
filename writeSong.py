@@ -66,7 +66,7 @@ def minorKeyModulation(pattern):
 def removeInstrument(pattern):
     print("removing")
     removePick = choice([0,1,2])
-    removeLengths = [4,8,16,32]
+    removeLengths = [4,8,16,32,64]
     lengthPick = choice(removeLengths)
     for i in range(64 - lengthPick, 64):
         if removePick == 2:
@@ -82,7 +82,8 @@ def removeInstrument(pattern):
 
 def keyModulation(pattern):
     newPattern = pattern
-    keychanges = [-3, -2,-3,5]
+    keychanges = [-3, -2,3,5]
+    endpoint = choice([16,32,64,64])
     offset = choice(keychanges)
     print("key change " + str(offset))
     for i in range(2):
@@ -95,9 +96,9 @@ def keyModulation(pattern):
                                                + offset - 1]
                 else:
                     if NAMES2MIDI[note.pitch] < 3:
-                        note.pitch += 12
-
-                    newNote.pitch = MIDI2NAMES[NAMES2MIDI[note.pitch] + offset]
+                        MIDI2NAMES[NAMES2MIDI[note.pitch] + offset + 12]
+                    else:
+                        newNote.pitch = MIDI2NAMES[NAMES2MIDI[note.pitch] + offset]
                 newPattern[i][j] = newNote
             j += 1
     return newPattern
@@ -117,7 +118,7 @@ def addMutation(pattern):
         pattern2 = keyModulation(pattern)
         newPattern = removeInstrument(pattern2)
     else:
-        #newPattern = rhythmMutation(pattern)
+        newPattern = rhythmMutation(pattern)
         newPattern = removeInstrument(pattern)
 
     return newPattern

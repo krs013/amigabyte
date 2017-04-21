@@ -5,6 +5,8 @@ from random import randint
 from writeSong import writeFile, NoteObj
 from tables import *
 import time
+import numpy as np
+import copy
 
 numPitches = 60
 numTimesteps = BEATS_WINDOW
@@ -108,8 +110,8 @@ def generateBassline2(BassTimestep2BassTimestep, BassPitch2BassPitch):
         note.pitch = pick
         prevPitch = pick
     
-    for note in Bassline:
-        print(str(note.timestep) + ", " + str(note.pitch))
+    # for note in Bassline:
+    #     print(str(note.timestep) + ", " + str(note.pitch))
 
     return Bassline
 
@@ -165,19 +167,27 @@ def generateTrebleLine3(
     if Bassline[0].timestep == 0:
         currentBassNote = 0
 
-    TT2TT[:-1,:-1] *= BT2TT
+    matrix = copy.deepcopy(TT2TT)
+    matrix[:-1,:-1] * np.power(BT2TT,1)
     while True:
 
         # Compute a dot produce of the two lists
         #combinedWeights = [a*b for a,b in zip(TT2TT[pick], BT2TT[currentBassNote])]
-        combinedWeights = TT2TT[pick]
+        combinedWeights = matrix[pick]
         # Update currentBassNote. How?
         
         # Renomalize the combinedWeights list
-        normalizedWeights = [x / sum(combinedWeights) for x in combinedWeights]
-
-        # Make a choice
-        pick = choice(l, p=normalizedWeights)
+        if (sum(combinedWeights) == 0.0):
+            print("zero!!")
+            normalizedWeights = [0 for x in combinedWeights]
+            normalizedWeights[numTimesteps] = 1.0
+            # while True:
+            #     x = 7
+            pick = numTimesteps
+        else:
+            normalizedWeights = [x / sum(combinedWeights) for x in combinedWeights]
+            # Make a choice
+            pick = choice(l, p=normalizedWeights)
         if pick == numTimesteps:
             break
         else:
@@ -248,6 +258,66 @@ def generateDrum(t2t, pitch):
 
     return Drumline
 
+def harmonyValue(b,t):
+    if b > t:
+        t += 12
+    # smallest = min(b,t)
+    # Offset in halfnotes
+    offset = t - b
+
+    if offset == 0:
+        return 15
+    elif offset == 1:
+        return 0
+    elif offset == 2:
+        return 0
+    elif offset == 3:
+        return 0
+    elif offset == 4:
+        return 0
+    elif offset == 5:
+        return 10
+    elif offset == 6:
+        return 0
+    elif offset == 7:
+        return 20
+    elif offset == 8:
+        return 0
+    elif offset == 9:
+        return 0
+    elif offset == 10:
+        return 0
+    elif offset == 11:
+        return 0
+    else:
+        print("WARNING")
+        return -100
+
+
+
+def fitnessFunction(Bassline, Trebleline):
+    score = 0
+    # Well, let's just do this the easy way..
+    eclipseCount = 0
+    for bassnote in Bassline:
+        for trebnote in Trebleline:
+            if (bassnote.timestep == trebnote.timestep):
+                eclipseCount += 1
+                score += harmonyValue(bassnote.pitch%12, trebnote.pitch%12)
+    score = score - eclipseCount
+    lastTreb = 0
+    for trebnote in Trebleline:
+        if abs(trebnote.pitch - lastTreb) == 1:
+            score -= 5
+        lastTreb = trebnote.pitch
+
+    lastBass = 0
+    for bassnote in Bassline:
+        if abs(bassnote.pitch - lastBass) == 1:
+            score -= 5
+        lastBass = bassnote.pitch
+
+    return score
 
 def generator(BP2BP, 
     BT2BT, 
@@ -264,9 +334,15 @@ def generator(BP2BP,
     BP2TP,
     BT2TT
     ):
-    
-    Bassline = generateBassline2(BT2BT, BP2BP)
-    Trebleline = generateTrebleLine3(Bassline, TP2TP, BP2TP, TT2TT, BT2TT)
+
+    score = 0
+
+    while score < 70:
+        Bassline = generateBassline2(BT2BT, BP2BP)
+        Trebleline = generateTrebleLine3(Bassline, TP2TP, BP2TP, TT2TT, BT2TT)
+        score = fitnessFunction(Bassline, Trebleline)
+        print("SCORE: " + str(score))
+
     Kickline = generateDrum(bd2bd, bdpitch)
     Snareline = generateDrum(sn2sn, snpitch)
 
@@ -288,6 +364,9 @@ def generator(BP2BP,
         for note in Snareline:
             newNote = NoteObj(int(note.pitch), int(note.timestep + i*16))
             newSnareline.append(newNote)
+
+
+
 
     songname = "creation64" + time.strftime('%H%M%S') + ".mod"
 
