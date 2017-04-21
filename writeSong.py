@@ -19,25 +19,29 @@ class NoteObj:
 
 		
 def rhythmMutation(pattern):
-    newPattern = pattern
-    print("rhythm, why are you running?")
-    channelList = [0,1] # Only remove treble or bass for now
-    channelPick = int(choice(channelList))
-    timestepList = list(range(BEATS_WINDOW))
-    timestepPick = int(choice(timestepList))
+    print("rhythm")
+    channelPick = int(choice([0,1]))
+    timestepPick = int(choice(list(range(BEATS_WINDOW))))
     while timestepPick < BEATS_WINDOW:
         if pattern[channelPick][timestepPick] is not None:
             break
         else:
             timestepPick += 1
-    i = 0
-    for i in range(64//BEATS_WINDOW):
-        shiftIndex = timestepPick + (i * 16)
-        while shiftIndex < 16*(i+1):
-            if (shiftIndex != 0):
-                pattern[channelPick][shiftIndex - 1] = pattern[
-                    channelPick][shiftIndex]
-            shiftIndex += 1
+
+    rhythmPick = choice([-2,2])
+    pattern[channelPick][timestepPick + rhythmPick] = pattern[channelPick][timestepPick]
+    pattern[channelPick][timestepPick] = None
+
+
+
+    # i = 0
+    # for i in range(64//BEATS_WINDOW):
+    #     shiftIndex = timestepPick + (i * 16)
+    #     while shiftIndex < 16*(i+1):
+    #         if (shiftIndex != 0):
+    #             pattern[channelPick][shiftIndex - 1] = pattern[
+    #                 channelPick][shiftIndex]
+    #         shiftIndex += 1
     return pattern
 
 
@@ -62,7 +66,9 @@ def removeInstrument(pattern):
     print("removing")
     removeList = [0,1] # Only remove treble or bass for now
     removePick = choice(removeList)
-    for i in range(64):
+    removeLengths = [4,8,16,32]
+    lengthPick = choice(removeLengths)
+    for i in range(64 - lengthpick, 64):
         pattern[int(removePick)][i] = None
     return pattern
 
@@ -88,7 +94,7 @@ def keyModulation(pattern):
 
 
 def addMutation(pattern):
-    mutationChoices = [1,2,3]
+    mutationChoices = [1,2,3,4]
     pick = choice(mutationChoices)
     print(pick)
     if (pick == 1):
