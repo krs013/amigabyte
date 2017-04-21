@@ -10,12 +10,11 @@ class Cluster:
         self.instruments = [instruments[int(c)] for c in cluster]
         self.dex_map = {int(v): n for n, v in enumerate(cluster)}
         self.seed = cluster.index(seed)
-        self._sample = self.seed  # Change to sample randomly
+        self._sample = None #self.seed  # Change to sample randomly
         self._fomm_pitch = None
         self._fomm_beats = None
         self._pitch_probs = None
         self._shifted_fomm_pitch = None
-        self._shifted_fomm_beats = None
         self.alignment = np.zeros(len(self.instruments), dtype=int)
         self.tonal = self.instruments[self.seed].unique_pitches > 1
 
@@ -49,9 +48,7 @@ class Cluster:
                 raise Exception('Songs don\'t match')
             sdex1 = self.instruments[dex1].notes[0][1].sample
             sdex2 = other.instruments[dex2].notes[0][1].sample
-            a, b = self.align_slices(self.alignment[dex1])
-            c, d = other.align_slices(other.alignment[dex2])
-            correlation[a,c] += song.beats_correlation(sdex2, sdex1)[b,d]
+            correlation += song.beats_correlation(sdex2, sdex1)
         sums = np.sum(correlation, 1)
         zeros = np.where(sums == 0)
         nonzs = np.where(sums != 0)
@@ -72,7 +69,7 @@ class Cluster:
             alignment = np.argmax(correlation) - len(correlation)//2
             a, b = self.align_slices(alignment)
             self._fomm_pitch[a,a] += inst.fomm_pitch()[b,b]
-            self._fomm_beats[a,a] += inst.fomm_beats()[b,b]
+            self._fomm_beats += inst.fomm_beats()
             # arrayprint(inst.fomm_beats())
             # print('=========')
             # print()
@@ -118,6 +115,8 @@ class Cluster:
         
     @property
     def fomm_pitch(self):
+        if self._sample is None:
+            self.new_sample()
         if self._fomm_pitch is None:
             self.combine()
         if self._shifted_fomm_pitch is None:
@@ -128,13 +127,11 @@ class Cluster:
         
     @property
     def fomm_beats(self):
+        if self._sample is None:
+            self.new_sample()
         if self._fomm_beats is None:
             self.combine()
-        if self._shifted_fomm_beats is None:
-            self._shifted_fomm_beats = np.zeros((BEATS_WINDOW+1,)*2)
-            a, b = self.align_slices(self.alignment[self._sample])
-            self._shifted_fomm_beats[b,b] = self._fomm_beats[a,a]
-        return self._shifted_fomm_beats
+        return self._fomm_beats
 
     @property
     def pitch_probs(self):
