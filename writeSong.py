@@ -64,12 +64,15 @@ def minorKeyModulation(pattern):
 # Remove a channel (instrument) from a pattern
 def removeInstrument(pattern):
     print("removing")
-    removeList = [0,1] # Only remove treble or bass for now
-    removePick = choice(removeList)
+    removePick = choice([0,1,2])
     removeLengths = [4,8,16,32]
     lengthPick = choice(removeLengths)
     for i in range(64 - lengthPick, 64):
-        pattern[int(removePick)][i] = None
+        if removePick == 2:
+            pattern[int(removePick)][i] = None
+            pattern[int(removePick+1)][i] = None
+        else:
+            pattern[int(removePick)][i] = None
     return pattern
 
 
