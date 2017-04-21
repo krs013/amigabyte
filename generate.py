@@ -149,11 +149,76 @@ def generateTrebleline2(TrebleTimestep2TrebleTimestep, TreblePitch2TreblePitch):
 
     return Trebleline
 
+def generateTrebleLine3(
+    Bassline
+    TP2TP,
+    BP2TP,
+    TT2TT,
+    BT2TT)
+
+    Trebleline = []
+    pick = numTimesteps
+    l = list(range(numTimesteps+1))
+
+    # Create timestep list first
+    currentBassNote = 0 #
+    if Bassline[0].timestep == 1:
+        currentBassNote = 1
+    while True:
+
+        # Compute a dot produce of the two lists
+        combinedWeights = [a*b for a,b in zip(TT2TT[pick], BT2BT[currentBassNote])]
+        # Update currentBassNote. How?
+        
+        # Renomalize the combinedWeights list
+        normalizedWeights = [x / sum(combinedWeights) for x in combinedWeights]
+
+        # Make a choice
+        pick = choice(l, p=normalizedWeights)
+        if pick == numTimesteps:
+            break
+        else:
+            note = NoteObj(-1, pick)
+            Trebleline.append(note)
+
+            # Find new currentBassNote
+            newCurrentBassNote = currentBassNote
+            for bassnote in Bassline:
+                if (bassnote.timestep > pick):
+                    break
+                else:
+                    newCurrentBassNote = bassnote.timestep
+            currentBassNote = newCurrentBassNote
+
+    # Then fill in notes with pitches
+    prevPitch = 0
+    currentBassPitch = Bassline[0].pitch
+    l = list(range(numPitches))
+
+    for note in Trebleline:
+        for bassnote in Bassline:
+            if bassnote.timestep > note.timestep:
+                break
+            else:
+                currentBassPitch = bassnote.pitch
+
+        # Compute a dot proudct of the two lists
+        combinedWeights = [a*b for a,b in zip(TP2TP[prevPitch],BP2BP[currentBassPitch])]
+
+        # Renormalize
+        normalizedWeights = [x / sum(combinedWeights) for x in combinedWeights]
+
+        pick = choice(l, p=normalizedWeights)
+        prevPitch = pick
+        note.pitch = pick
+
+    return Trebleline
+
 # Generate a treble line, contingent on the bassline
 def generateTrebleLine(
         Bassline, TreblePitch2TreblePitch,
         BassPitch2TreblePitch, TrebleTimestep2TrebleTimestep,
-        BassTimestep2TrebleTimestep, BassTimestep2BassTimestep):
+        BassTimestep2TrebleTimestep):
     # First generate timestep pattern
     Trebleline = []
     pick = 0
@@ -262,10 +327,8 @@ def generator(BP2BP,
     sn2sn
     ):
     
-    print("in generator")
     Bassline = generateBassline2(BT2BT, BP2BP)
-    print("bassline done")
-    Trebleline = generateTrebleline2(TT2TT, TP2TP)
+    Trebleline = generateTrebleline3(Bassline, TP2TP, BP2BP, TT2TT, BT2BT)
     Kickline = generateDrum(bd2bd, bdpitch)
     Snareline = generateDrum(sn2sn, snpitch)
 
