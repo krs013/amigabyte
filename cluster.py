@@ -43,7 +43,7 @@ class Cluster:
         zeros = np.where(sums == 0.0)
         nonzs = np.where(sums != 0.0)
         self.fomm_beats[nonzs,:] /= sums[nonzs,np.newaxis]
-        self.fomm_beats[zeros,0] = 1.0
+        self.fomm_beats[zeros,-1] = 1.0
 
     @staticmethod
     def align_slices(offset):
