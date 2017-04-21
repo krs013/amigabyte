@@ -110,7 +110,7 @@ class Cluster:
     def new_sample(self):
         self._sample = choice(range(len(self.instruments)))
         self._shifted_fomm_pitch = None
-        self._shifted_fomm_beats = None
+        self._fomm_beats = None
         self._pitch_probs = None
         
     @property

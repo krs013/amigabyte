@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from os import path
 from sys import stderr, argv
 from glob import glob
+from pdb import set_trace
 from song import Song
 from instrument import Instrument
 from listen import Listen
@@ -384,22 +385,22 @@ class Learner:
         snare_sample = self.instruments[self.ideal_kick].sample
         snpitch = self.instruments[self.ideal_hihat].rounded_pitch_num
 
-        generator(self.bass_cluster.fomm_pitch, 
-            self.bass_cluster.fomm_beats, 
-            self.treb_cluster.fomm_pitch, 
-            self.treb_cluster.fomm_beats,
-            bass_sample,
-            treb_sample,
-            kick_sample,
-            bdpitch,
-            self.kick_cluster.fomm_beats,
-            snare_sample,
-            snpitch,
-            self.snare_cluster.fomm_beats,
-            bp2tp,
-            bt2tt
-            )
+        def new_samples():
+            self.bass_cluster.new_sample()
+            self.treb_cluster.new_sample()
 
+        def makesong():
+            generator(self.bass_cluster.fomm_pitch,
+                      self.bass_cluster.fomm_beats,
+                      self.treb_cluster.fomm_pitch,
+                      self.treb_cluster.fomm_beats, bass_sample, treb_sample,
+                      kick_sample, bdpitch, self.kick_cluster.fomm_beats,
+                      snare_sample, snpitch, self.snare_cluster.fomm_beats,
+                      bp2tp, bt2tt )
+
+        makesong()
+        set_trace()
+            
         return linkage
 
     def compose(self):
