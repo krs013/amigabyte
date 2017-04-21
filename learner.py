@@ -106,7 +106,7 @@ class Learner:
                         break
                     count += find
                 if count > 1:
-                    print("collision between clusters")
+                    # print("collision between clusters")
                     flag = 1
                     break
 
@@ -125,7 +125,7 @@ class Learner:
         self.snare_cluster = next(filter(lambda x: self.ideal_hihat in x,
                                         clusters))
 
-        # listen = Listen()
+        listen = Listen()
         # listen.play_instrument(self.instruments[ideal_hihat])
 
         # print("*************************Kick Row**********************")
@@ -136,8 +136,9 @@ class Learner:
         # for sample in snare_row:
         #     listen.play_instrument(self.instruments[int(sample)])
 
-        # print("*************************Bass Row************************")
-        # for sample in bass_row:
+        # print("*************************Bass Samples************************")
+        # for sample in self.bass_cluster:
+        #     print("Sample " + str(sample) + ":")
         #     listen.play_instrument(self.instruments[int(sample)])
 
         # print("*************************Treble Row************************")
