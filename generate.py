@@ -149,20 +149,28 @@ def generateTrebleline2(TrebleTimestep2TrebleTimestep, TreblePitch2TreblePitch):
 
     return Trebleline
 
-def generateTrebleLine3(Bassline, TP2TP, BP2TP, TT2TT, BT2TT):
+def generateTrebleLine3(
+    Bassline,
+    TP2TP,
+    BP2TP,
+    TT2TT,
+    BT2TT):
 
     Trebleline = []
     pick = numTimesteps
     l = list(range(numTimesteps+1))
 
     # Create timestep list first
-    currentBassNote = 0 #
-    if Bassline[0].timestep == 1:
-        currentBassNote = 1
+    currentBassNote = numTimesteps #
+    if Bassline[0].timestep == 0:
+        currentBassNote = 0
+
+    TT2TT[:-1,:-1] *= BT2TT
     while True:
 
         # Compute a dot produce of the two lists
-        combinedWeights = [a*b for a,b in zip(TT2TT[pick], BT2BT[currentBassNote])]
+        #combinedWeights = [a*b for a,b in zip(TT2TT[pick], BT2TT[currentBassNote])]
+        combinedWeights = TT2TT[pick]
         # Update currentBassNote. How?
         
         # Renomalize the combinedWeights list
@@ -198,7 +206,7 @@ def generateTrebleLine3(Bassline, TP2TP, BP2TP, TT2TT, BT2TT):
                 currentBassPitch = bassnote.pitch
 
         # Compute a dot proudct of the two lists
-        combinedWeights = [a*b for a,b in zip(TP2TP[prevPitch],BP2BP[currentBassPitch])]
+        combinedWeights = [a*b for a,b in zip(TP2TP[prevPitch],BP2TP[currentBassPitch])]
 
         # Renormalize
         normalizedWeights = [x / sum(combinedWeights) for x in combinedWeights]
@@ -209,73 +217,6 @@ def generateTrebleLine3(Bassline, TP2TP, BP2TP, TT2TT, BT2TT):
 
     return Trebleline
 
-# Generate a treble line, contingent on the bassline
-def generateTrebleLine(
-        Bassline, TreblePitch2TreblePitch,
-        BassPitch2TreblePitch, TrebleTimestep2TrebleTimestep,
-        BassTimestep2TrebleTimestep):
-    # First generate timestep pattern
-    Trebleline = []
-    pick = 0
-    l = list(range(numTimesteps+1))
-
-    # Create timestep list first
-    currentBassNote = 0 #
-    if Bassline[0].timestep == 1:
-        currentBassNote = 1
-    while True:
-
-        # Compute a dot produce of the two lists
-        combinedWeights = [a*b for a,b in
-                           zip(TrebleTimestep2TrebleTimestep[pick],
-                               BassTimestep2TrebleTimestep[currentBassNote])]
-        # Update currentBassNote. How?
-        
-        # Renomalize the combinedWeights list
-        normalizedWeights = [x / sum(combinedWeights) for x in combinedWeights]
-
-        # Make a choice
-        pick = choice(l, p=normalizedWeights)
-        if pick == 0:
-            break
-        else:
-            note = NoteObj(-1, pick)
-            Trebleline.append(note)
-
-            # Find new currentBassNote
-            newCurrentBassNote = currentBassNote
-            for bassnote in Bassline:
-                if (bassnote.timestep > pick):
-                    break
-                else:
-                    newCurrentBassNote = bassnote.timestep
-            currentBassNote = newCurrentBassNote
-
-    # Then fill in notes with pitches
-    prevPitch = 0
-    currentBassPitch = Bassline[0].pitch
-    l = list(range(numPitches+1))
-    for note in Trebleline:
-
-        for bassnote in Bassline:
-            if bassnote.timestep > note.timestep:
-                break
-            else:
-                currentBassPitch = bassnote.pitch
-
-        # Compute a dot proudct of the two lists
-        combinedWeights = [a*b for a,b in
-                           zip(TreblePitch2TreblePitch[prevPitch],
-                               BassPitch2TreblePitch[currentBassPitch])]
-
-        # Renormalize
-        normalizedWeights = [x / sum(combinedWeights) for x in combinedWeights]
-
-        pick = choice(l, p=normalizedWeights)
-        prevPitch = pick
-        note.pitch = pick
-
-    return Trebleline
 
 def generateDrum(t2t, pitch):
     Drumline = []
@@ -319,11 +260,13 @@ def generator(BP2BP,
     bd2bd,
     snare_sample, 
     snpitch,
-    sn2sn
+    sn2sn,
+    BP2TP,
+    BT2TT
     ):
     
     Bassline = generateBassline2(BT2BT, BP2BP)
-    Trebleline = generateTrebleline3(Bassline, TP2TP, BP2BP, TT2TT, BT2BT)
+    Trebleline = generateTrebleLine3(Bassline, TP2TP, BP2TP, TT2TT, BT2TT)
     Kickline = generateDrum(bd2bd, bdpitch)
     Snareline = generateDrum(sn2sn, snpitch)
 

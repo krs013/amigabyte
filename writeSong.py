@@ -29,7 +29,7 @@ def rhythmMutation(pattern):
             timestepPick += 1
 
     rhythmPick = choice([-2,2])
-    if timestep + rhythmPick >= 0 and timestep + rhythmPick < 64:
+    if timestepPick + rhythmPick >= 0 and timestepPick + rhythmPick < 64:
         pattern[channelPick][int(timestepPick + rhythmPick)] = pattern[channelPick][timestepPick]
         pattern[channelPick][timestepPick] = None
     else:
@@ -106,7 +106,10 @@ def addMutation(pattern):
     elif (pick == 2):
         newPattern = removeInstrument(pattern)
     elif (pick == 3):
-        newPattern = minorKeyModulation(pattern)
+        #newPattern = minorKeyModulation(pattern)
+        print("double!")
+        pattern2 = keyModulation(pattern)
+        newPattern = removeInstrument(pattern2)
     else:
         newPattern = rhythmMutation(pattern)
     return newPattern
