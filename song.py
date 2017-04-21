@@ -5,6 +5,7 @@ from itertools import chain, product
 from sample import Sample
 from pattern import Pattern
 from instrument import Instrument
+from tables import *
 
 
 class Song:
@@ -89,7 +90,7 @@ class Song:
     def pitch_correlation(self, prob_dex, cond_dex):
         prob_pitches = list(self.instruments[prob_dex].pitches)
         cond_pitches = list(self.instruments[cond_dex].pitches)
-        counts = {cp: {pp: 0 for pp in prob_pitches} for cp in cond_pitches}
+        counts = {cp: {pp: 0 for pp in PITCH_LIST} for cp in PITCH_LIST}
         # Could add a None entry, but better to just use prior prob/nothing?
         prob_notes = [False]*4
         cond_notes = [False]*4
@@ -102,12 +103,14 @@ class Song:
             for cp, pp in product(filter(None, cond_notes),
                                 filter(None, prob_notes)):
                 counts[cp][pp] += 1
-        arrayed = np.array([[counts[cp][pp] for pp in prob_pitches]
-                            for cp in cond_pitches])
-        return (prob_pitches, cond_pitches,
-                arrayed / np.sum(arrayed, axis=1)[:,np.newaxis])
+        arrayed = np.array([[counts[cp][pp] for pp in PITCH_LIST]
+                            for cp in PITCH_LIST], dtype=float)
+        sums = np.sum(arrayed, axis=1)
+        nonzs = np.where(sums != 0)
+        arrayed[nonzs,:] /= sums[nonzs,np.newaxis]
+        return arrayed
         
-    def beats_correlation(self, prob_dex, cond_dex, size=16):
+    def beats_correlation(self, prob_dex, cond_dex, size=BEATS_WINDOW):
         counts = np.zeros((size, size))
         prob_beats = [False]*4
         cond_beats = [False]*4

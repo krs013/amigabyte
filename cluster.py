@@ -8,6 +8,7 @@ class Cluster:
     def __init__(self, instruments, seed, cluster):
 
         self.instruments = [instruments[int(c)] for c in cluster]
+        self.dex_map = {int(v): n for n, v in enumerate(cluster)}
         self.seed = cluster.index(seed)
         self._sample = self.seed  # Change to sample randomly
         self._fomm_pitch = None
@@ -17,6 +18,46 @@ class Cluster:
         self._shifted_fomm_beats = None
         self.alignment = np.zeros(len(self.instruments), dtype=int)
         self.tonal = self.instruments[self.seed].unique_pitches > 1
+
+    def pitch_correlation(self, other, pairs):
+        correlation = np.zeros((len(PITCH_LIST),)*2)
+        for pair in pairs:
+            dex1 = self.dex_map[pair[0]]
+            dex2 = other.dex_map[pair[1]]
+            song = self.instruments[dex1].song
+            if not song == other.instruments[dex2].song:
+                raise Exception('Songs don\'t match')
+            sdex1 = self.instruments[dex1].notes[0][1].sample
+            sdex2 = other.instruments[dex2].notes[0][1].sample
+            a, b = self.align_slices(self.alignment[dex1])
+            c, d = other.align_slices(other.alignment[dex2])
+            correlation[a,c] += song.pitch_correlation(sdex1, sdex2)[b,d]
+        sums = np.sum(correlation, 1)
+        zeros = np.where(sums == 0)
+        nonzs = np.where(sums != 0)
+        correlation[nonzs,:] /= sums[nonzs,np.newaxis]
+        correlation[zeros,:] = 1.0/correlation.shape[1]
+        return correlation
+
+    def beats_correlation(self, other, pairs):
+        correlation = np.zeros((BEATS_WINDOW,)*2)
+        for pair in pairs:
+            dex1 = self.dex_map[pair[0]]
+            dex2 = other.dex_map[pair[1]]
+            song = self.instruments[dex1].song
+            if not song == other.instruments[dex2].song:
+                raise Exception('Songs don\'t match')
+            sdex1 = self.instruments[dex1].notes[0][1].sample
+            sdex2 = other.instruments[dex2].notes[0][1].sample
+            a, b = self.align_slices(self.alignment[dex1])
+            c, d = other.align_slices(other.alignment[dex2])
+            correlation[a,c] += song.beats_correlation(sdex1, sdex2)[b,d]
+        sums = np.sum(correlation, 1)
+        zeros = np.where(sums == 0)
+        nonzs = np.where(sums != 0)
+        correlation[nonzs,:] /= sums[nonzs,np.newaxis]
+        correlation[zeros,:] = 1.0/correlation.shape[1]
+        return correlation
 
     def combine(self):
         self._fomm_pitch = np.zeros((len(PITCH_LIST),)*2)
