@@ -394,8 +394,10 @@ class Learner:
         #self.treb_cluster.new_sample()
         treb_sample = self.treb_cluster.sample.sample
 
-        kick_sample = self.instruments[self.ideal_snare].sample
-        bdpitch = self.instruments[self.ideal_snare].rounded_pitch_num
+        # kick_sample = self.instruments[self.ideal_hihat].sample
+        # bdpitch = self.instruments[self.ideal_hihat].rounded_pitch_num
+        kick_sample = self.snare_cluster.sample.sample
+        bdpitch = self.snare_cluster.sample.rounded_pitch_num
 
         snare_sample = self.instruments[self.ideal_kick].sample
         snpitch = self.instruments[self.ideal_hihat].rounded_pitch_num
