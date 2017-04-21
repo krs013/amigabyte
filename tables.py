@@ -66,3 +66,5 @@ PERIODS = {v: k for k, v in PITCHES.items()}
 FREQ_ARRAY = list(FREQ2MIDI)
 
 PITCH_LIST = [MIDI2NAMES[n] for n in range(len(MIDI2NAMES))]
+
+BEATS_WINDOW = 16

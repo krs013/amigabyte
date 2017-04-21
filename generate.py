@@ -3,10 +3,11 @@ from song import Song
 from numpy.random import choice
 from random import randint
 from writeSong import writeFile, NoteObj
+from tables import *
 import time
 
 numPitches = 60
-numTimesteps = 16 # 4 timesteps per beat
+numTimesteps = BEATS_WINDOW
 
 
 # Create a randomized table for testing purposes
@@ -272,7 +273,7 @@ def generator(BP2BP,
     newBassdrumline = []
     newSnareline = []
 
-    for i in range(4):
+    for i in range(64//BEATS_WINDOW):
         for note in Trebleline:
             newNote = NoteObj(int(note.pitch), int(note.timestep + i*16))
             newTrebleline.append(newNote)
@@ -286,7 +287,7 @@ def generator(BP2BP,
             newNote = NoteObj(int(note.pitch), int(note.timestep + i*16))
             newSnareline.append(newNote)
 
-    songname = "creation" + time.strftime('%H%M%S') + ".mod"
+    songname = "creation64" + time.strftime('%H%M%S') + ".mod"
 
     writeFile(newBassline,
         newTrebleline,
@@ -318,7 +319,7 @@ def random_test():
     newBassline = []
     newTrebleline = []
     
-    for i in range(4):
+    for i in range(64//BEATS_WINDOW):
         for note in Trebleline:
             if note.pitch == 1:
                 note.pitch = 0
